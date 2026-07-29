@@ -303,7 +303,25 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .deck-toolbar .btn-danger-outline{border-color:var(--red);color:var(--red)}
 .deck-lock-badge{display:inline-block;font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:999px;border:1px solid var(--border);color:var(--ink-soft);margin-left:.35rem;vertical-align:middle}
 .danger-link{display:none} /* hide old tiny link; use toolbar */
+
+.lore-card{border-radius:16px;padding:0;overflow:hidden;border:1px solid var(--border);background:var(--card);margin:.55rem 0;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.lore-card .art{height:88px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;position:relative}
+.lore-card .art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.12))}
+.lore-card .body{padding:.75rem .85rem 1rem}
+.lore-card .char{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.75;margin-bottom:.2rem}
+.lore-card .de{font-size:1.05rem;font-weight:800;line-height:1.25;margin:.15rem 0}
+.lore-card .ru{font-size:.85rem;color:var(--ink-soft);margin-bottom:.4rem}
+.lore-card .lore{font-size:.78rem;line-height:1.45;color:var(--ink);opacity:.9;border-top:1px solid var(--border);padding-top:.45rem;margin-top:.35rem}
+.lore-card.r-common .art{background:linear-gradient(135deg,#e8e6e1,#cfcbc3)}
+.lore-card.r-rare .art{background:linear-gradient(135deg,#d6e4ff,#7ba3f0)}
+.lore-card.r-epic .art{background:linear-gradient(135deg,#e8d5ff,#9b6bff)}
+.lore-card.r-legend .art{background:linear-gradient(135deg,#ffe6a8,#d4a017)}
+.coll-grid{grid-template-columns:1fr}
+.coll-chip.lore-mini{padding:0;overflow:hidden}
+.coll-chip .mini-art{height:48px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.story-dlg-badge{font-size:.65rem;opacity:.7;margin-left:.3rem}
 </style>
+
 </head>
 <body>
 <div id="app">
@@ -813,7 +831,7 @@ alert_no_mistakes:'Пока нет слабых карточек — снача�
 },en:{n:'English'},de:{n:'Deutsch'},uk:{n:'Українська'},es:{n:'Español'},fr:{n:'Français'},pl:{n:'Polski'},tr:{n:'Türkçe'},zh:{n:'中文'},ja:{n:'日本語'},ar:{n:'العربية'},pt:{n:'Português'},it:{n:'Italiano'},ko:{n:'한국어'},vi:{n:'Tiếng Việt'}
 };
 const UI={
-ru:{deck_protected:'Групповая',deck_no_delete:'Групповую колоду нельзя удалить — можно править карточки',confirm_delete_deck:'Удалить свою колоду и все её карточки?',import_pick_decks:'В файле несколько колод.\nOK = импортировать ВСЕ\nОтмена = только первую колоду',decks_for_lang:'Для',decks_show_all:'Показать все',decks_filter_lang:'Фильтр по языку',empty_decks_lang:'Нет колод для этого языка. «Показать все» или 🔄 Группа.',sync_group:'🔄 Группа',sync_ok:'База группы обновлена',sync_fail:'Не удалось скачать group-base.json. Проверь интернет или хостинг.',sync_none:'Новых карточек нет',hint_letter:'Буква',hint_rule:'Правило',tile_grammar:'Грамматика',hint_grammar:'Падежи, Perfekt, Nebensatz',tile_collection:'Коллекция',hint_collection:'Ранг, паки и идиомы',rank:'Ранг',pack_ready:'Пак доступен!',pack_sub:'Дневная цель закрыта — открой бустер',open_pack:'Открыть пак',coll_empty:'Пока пусто. Закрой цель на день.',coll_title:'Собранные карточки',iron_wins:'Идеальных серий',rarity_common:'Обычная',rarity_rare:'Редкая',rarity_epic:'Эпическая',rarity_legend:'Легенда',lt_429:'LanguageTool лимит (часто общий Wi‑Fi). Подожди 1–2 мин или проверь через LTE.',review_limit_q:'Слишком много слов ({n}). Показать первые {m}? Остальные не попадут в этот импорт.',import_personal_q:'Файл содержит личные данные (настройки, API-ключ, историю). Заменить ваши? Для обмена колодами — Отмена.',you_wrote:'Вы написали',ocr_need_key:'Для фото нужен API-ключ Anthropic в Настройках (бесплатный tier). Или «Вставить текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоды',app_name:'forn',
+ru:{dlg_story:'История из твоих слов',dlg_story_hint:'Диалог из слов, которые ты учишь',dlg_story_need:'Добавь больше слов в колоды',deck_protected:'Групповая',deck_no_delete:'Групповую колоду нельзя удалить — можно править карточки',confirm_delete_deck:'Удалить свою колоду и все её карточки?',import_pick_decks:'В файле несколько колод.\nOK = импортировать ВСЕ\nОтмена = только первую колоду',decks_for_lang:'Для',decks_show_all:'Показать все',decks_filter_lang:'Фильтр по языку',empty_decks_lang:'Нет колод для этого языка. «Показать все» или 🔄 Группа.',sync_group:'🔄 Группа',sync_ok:'База группы обновлена',sync_fail:'Не удалось скачать group-base.json. Проверь интернет или хостинг.',sync_none:'Новых карточек нет',hint_letter:'Буква',hint_rule:'Правило',tile_grammar:'Грамматика',hint_grammar:'Падежи, Perfekt, Nebensatz',tile_collection:'Коллекция',hint_collection:'Ранг, паки и идиомы',rank:'Ранг',pack_ready:'Пак доступен!',pack_sub:'Дневная цель закрыта — открой бустер',open_pack:'Открыть пак',coll_empty:'Пока пусто. Закрой цель на день.',coll_title:'Собранные карточки',iron_wins:'Идеальных серий',rarity_common:'Обычная',rarity_rare:'Редкая',rarity_epic:'Эпическая',rarity_legend:'Легенда',lt_429:'LanguageTool лимит (часто общий Wi‑Fi). Подожди 1–2 мин или проверь через LTE.',review_limit_q:'Слишком много слов ({n}). Показать первые {m}? Остальные не попадут в этот импорт.',import_personal_q:'Файл содержит личные данные (настройки, API-ключ, историю). Заменить ваши? Для обмена колодами — Отмена.',you_wrote:'Вы написали',ocr_need_key:'Для фото нужен API-ключ Anthropic в Настройках (бесплатный tier). Или «Вставить текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоды',app_name:'forn',
 add:'+',
 add_row:'+ строка',
 again:'Ещё',
@@ -1031,7 +1049,7 @@ tile_mistakes:'Ошибки',
 hint_mistakes:'Повтор карточек с ошибками и низким боксом',
 alert_no_mistakes:'Пока нет слабых карточек — сначала поучись'
 },
-en:{deck_protected:'Group',deck_no_delete:'Group decks can’t be deleted — you can still edit cards',confirm_delete_deck:'Delete your deck and all its cards?',import_pick_decks:'File has several decks.\nOK = import ALL\nCancel = first deck only',decks_for_lang:'For',decks_show_all:'Show all',decks_filter_lang:'Filter by language',empty_decks_lang:'No decks for this language. Use “Show all” or Group sync.',sync_group:'🔄 Group',sync_ok:'Group base updated',sync_fail:'Could not fetch group-base.json. Check network/hosting.',sync_none:'No new cards',hint_letter:'Letter',hint_rule:'Rule',tile_grammar:'Grammar',hint_grammar:'Cases, Perfekt, Nebensatz',tile_collection:'Collection',hint_collection:'Rank, packs & idioms',rank:'Rank',pack_ready:'Pack ready!',pack_sub:'Daily goal done — open a booster',open_pack:'Open pack',coll_empty:'Empty. Finish the daily goal.',coll_title:'Collected cards',iron_wins:'Perfect runs',rarity_common:'Common',rarity_rare:'Rare',rarity_epic:'Epic',rarity_legend:'Legend',lt_429:'LanguageTool rate limit (common on shared Wi‑Fi). Wait 1–2 min or use mobile data.',review_limit_q:'Too many words ({n}). Show first {m}? The rest will not be imported.',import_personal_q:'File contains personal data (settings, API key, history). Replace yours? For sharing decks — Cancel.',you_wrote:'You wrote',ocr_need_key:'Photo OCR needs an Anthropic API key in Settings (free tier). Or use Paste as text.',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Theme',decks_label:'Decks',app_name:'forn',
+en:{dlg_story:'Story from your words',dlg_story_hint:'Built from vocabulary you study',dlg_story_need:'Add more words to your decks',deck_protected:'Group',deck_no_delete:'Group decks can’t be deleted — you can still edit cards',confirm_delete_deck:'Delete your deck and all its cards?',import_pick_decks:'File has several decks.\nOK = import ALL\nCancel = first deck only',decks_for_lang:'For',decks_show_all:'Show all',decks_filter_lang:'Filter by language',empty_decks_lang:'No decks for this language. Use “Show all” or Group sync.',sync_group:'🔄 Group',sync_ok:'Group base updated',sync_fail:'Could not fetch group-base.json. Check network/hosting.',sync_none:'No new cards',hint_letter:'Letter',hint_rule:'Rule',tile_grammar:'Grammar',hint_grammar:'Cases, Perfekt, Nebensatz',tile_collection:'Collection',hint_collection:'Rank, packs & idioms',rank:'Rank',pack_ready:'Pack ready!',pack_sub:'Daily goal done — open a booster',open_pack:'Open pack',coll_empty:'Empty. Finish the daily goal.',coll_title:'Collected cards',iron_wins:'Perfect runs',rarity_common:'Common',rarity_rare:'Rare',rarity_epic:'Epic',rarity_legend:'Legend',lt_429:'LanguageTool rate limit (common on shared Wi‑Fi). Wait 1–2 min or use mobile data.',review_limit_q:'Too many words ({n}). Show first {m}? The rest will not be imported.',import_personal_q:'File contains personal data (settings, API key, history). Replace yours? For sharing decks — Cancel.',you_wrote:'You wrote',ocr_need_key:'Photo OCR needs an Anthropic API key in Settings (free tier). Or use Paste as text.',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Theme',decks_label:'Decks',app_name:'forn',
 add:'+',
 add_row:'+ row',
 again:'Again',
@@ -1249,7 +1267,7 @@ tile_mistakes:'Mistakes',
 hint_mistakes:'Review cards you got wrong or still weak',
 alert_no_mistakes:'No weak cards yet — study a bit first',
 },
-de:{deck_protected:'Gruppe',deck_no_delete:'Gruppendecks können nicht gelöscht werden — Karten bearbeiten geht',confirm_delete_deck:'Eigenes Deck und alle Karten löschen?',import_pick_decks:'Datei hat mehrere Decks.\nOK = ALLE importieren\nAbbrechen = nur erstes Deck',decks_for_lang:'Für',decks_show_all:'Alle anzeigen',decks_filter_lang:'Nach Sprache filtern',empty_decks_lang:'Keine Decks für diese Sprache. „Alle anzeigen“ oder Gruppe-Sync.',sync_group:'🔄 Gruppe',sync_ok:'Gruppenbasis aktualisiert',sync_fail:'group-base.json konnte nicht geladen werden.',sync_none:'Keine neuen Karten',hint_letter:'Buchstabe',hint_rule:'Regel',tile_grammar:'Grammatik',hint_grammar:'Kasus, Perfekt, Nebensatz',tile_collection:'Sammlung',hint_collection:'Rang, Packs & Redewendungen',rank:'Rang',pack_ready:'Pack bereit!',pack_sub:'Tagesziel erreicht — Booster öffnen',open_pack:'Pack öffnen',coll_empty:'Leer. Tagesziel abschließen.',coll_title:'Gesammelte Karten',iron_wins:'Perfekte Läufe',rarity_common:'Gewöhnlich',rarity_rare:'Selten',rarity_epic:'Episch',rarity_legend:'Legende',lt_429:'LanguageTool-Limit (oft im gemeinsamen WLAN). 1–2 Min warten oder Mobilfunk nutzen.',review_limit_q:'Zu viele Wörter ({n}). Erste {m} zeigen? Rest wird nicht importiert.',import_personal_q:'Datei enthält persönliche Daten (Einstellungen, API-Key, Verlauf). Ersetzen? Zum Teilen von Decks — Abbrechen.',you_wrote:'Du hast geschrieben',ocr_need_key:'Foto-OCR braucht einen Anthropic-API-Key in den Einstellungen. Oder Text einfügen.',api_key_label:'Anthropic API-Key (OCR)',theme_toggle:'Design',decks_label:'Stapel',app_name:'forn',
+de:{dlg_story:'Geschichte aus deinen Wörtern',dlg_story_hint:'Dialog aus deinem Wortschatz',dlg_story_need:'Füge mehr Wörter in Decks ein',deck_protected:'Gruppe',deck_no_delete:'Gruppendecks können nicht gelöscht werden — Karten bearbeiten geht',confirm_delete_deck:'Eigenes Deck und alle Karten löschen?',import_pick_decks:'Datei hat mehrere Decks.\nOK = ALLE importieren\nAbbrechen = nur erstes Deck',decks_for_lang:'Für',decks_show_all:'Alle anzeigen',decks_filter_lang:'Nach Sprache filtern',empty_decks_lang:'Keine Decks für diese Sprache. „Alle anzeigen“ oder Gruppe-Sync.',sync_group:'🔄 Gruppe',sync_ok:'Gruppenbasis aktualisiert',sync_fail:'group-base.json konnte nicht geladen werden.',sync_none:'Keine neuen Karten',hint_letter:'Buchstabe',hint_rule:'Regel',tile_grammar:'Grammatik',hint_grammar:'Kasus, Perfekt, Nebensatz',tile_collection:'Sammlung',hint_collection:'Rang, Packs & Redewendungen',rank:'Rang',pack_ready:'Pack bereit!',pack_sub:'Tagesziel erreicht — Booster öffnen',open_pack:'Pack öffnen',coll_empty:'Leer. Tagesziel abschließen.',coll_title:'Gesammelte Karten',iron_wins:'Perfekte Läufe',rarity_common:'Gewöhnlich',rarity_rare:'Selten',rarity_epic:'Episch',rarity_legend:'Legende',lt_429:'LanguageTool-Limit (oft im gemeinsamen WLAN). 1–2 Min warten oder Mobilfunk nutzen.',review_limit_q:'Zu viele Wörter ({n}). Erste {m} zeigen? Rest wird nicht importiert.',import_personal_q:'Datei enthält persönliche Daten (Einstellungen, API-Key, Verlauf). Ersetzen? Zum Teilen von Decks — Abbrechen.',you_wrote:'Du hast geschrieben',ocr_need_key:'Foto-OCR braucht einen Anthropic-API-Key in den Einstellungen. Oder Text einfügen.',api_key_label:'Anthropic API-Key (OCR)',theme_toggle:'Design',decks_label:'Stapel',app_name:'forn',
 add:'+',
 add_row:'+ Zeile',
 again:'Nochmal',
@@ -1467,7 +1485,7 @@ tile_mistakes:'Fehler',
 hint_mistakes:'Karten mit Fehlern und niedrigem Fach wiederholen',
 alert_no_mistakes:'Noch keine schwachen Karten — erst üben',
 },
-uk:{deck_protected:'Групова',deck_no_delete:'Групову колоду не можна видалити — картки можна редагувати',confirm_delete_deck:'Видалити свою колоду та всі картки?',import_pick_decks:'У файлі кілька колод.\nOK = імпортувати ВСІ\nСкасувати = лише першу',decks_for_lang:'Для',decks_show_all:'Показати всі',decks_filter_lang:'Фільтр за мовою',empty_decks_lang:'Немає колод для цієї мови. «Показати всі» або 🔄 Група.',sync_group:'🔄 Група',sync_ok:'Базу групи оновлено',sync_fail:'Не вдалося завантажити group-base.json.',sync_none:'Нових карток немає',hint_letter:'Літера',hint_rule:'Правило',tile_grammar:'Граматика',hint_grammar:'Відмінки, Perfekt, Nebensatz',tile_collection:'Колекція',hint_collection:'Ранг, паки та ідіоми',rank:'Ранг',pack_ready:'Пак доступний!',pack_sub:'Денну ціль закрито — відкрий бустер',open_pack:'Відкрити пак',coll_empty:'Порожньо. Закрий ціль на день.',coll_title:'Зібрані картки',iron_wins:'Ідеальних серій',rarity_common:'Звичайна',rarity_rare:'Рідкісна',rarity_epic:'Епічна',rarity_legend:'Легенда',lt_429:'Ліміт LanguageTool (часто спільний Wi‑Fi). Зачекай 1–2 хв або LTE.',review_limit_q:'Забагато слів ({n}). Показати перші {m}? Решта не потрапить в імпорт.',import_personal_q:'Файл містить особисті дані (налаштування, API-ключ, історію). Замінити ваші? Для обміну колодами — Скасувати.',you_wrote:'Ви написали',ocr_need_key:'Для фото потрібен API-ключ Anthropic у Налаштуваннях. Або «Вставити текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоди',app_name:'forn',
+uk:{dlg_story:'Історія з твоїх слів',dlg_story_hint:'Діалог зі слів, які ти вчиш',dlg_story_need:'Додай більше слів у колоди',deck_protected:'Групова',deck_no_delete:'Групову колоду не можна видалити — картки можна редагувати',confirm_delete_deck:'Видалити свою колоду та всі картки?',import_pick_decks:'У файлі кілька колод.\nOK = імпортувати ВСІ\nСкасувати = лише першу',decks_for_lang:'Для',decks_show_all:'Показати всі',decks_filter_lang:'Фільтр за мовою',empty_decks_lang:'Немає колод для цієї мови. «Показати всі» або 🔄 Група.',sync_group:'🔄 Група',sync_ok:'Базу групи оновлено',sync_fail:'Не вдалося завантажити group-base.json.',sync_none:'Нових карток немає',hint_letter:'Літера',hint_rule:'Правило',tile_grammar:'Граматика',hint_grammar:'Відмінки, Perfekt, Nebensatz',tile_collection:'Колекція',hint_collection:'Ранг, паки та ідіоми',rank:'Ранг',pack_ready:'Пак доступний!',pack_sub:'Денну ціль закрито — відкрий бустер',open_pack:'Відкрити пак',coll_empty:'Порожньо. Закрий ціль на день.',coll_title:'Зібрані картки',iron_wins:'Ідеальних серій',rarity_common:'Звичайна',rarity_rare:'Рідкісна',rarity_epic:'Епічна',rarity_legend:'Легенда',lt_429:'Ліміт LanguageTool (часто спільний Wi‑Fi). Зачекай 1–2 хв або LTE.',review_limit_q:'Забагато слів ({n}). Показати перші {m}? Решта не потрапить в імпорт.',import_personal_q:'Файл містить особисті дані (налаштування, API-ключ, історію). Замінити ваші? Для обміну колодами — Скасувати.',you_wrote:'Ви написали',ocr_need_key:'Для фото потрібен API-ключ Anthropic у Налаштуваннях. Або «Вставити текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоди',app_name:'forn',
 add:'+',
 add_row:'+ рядок',
 again:'Ще',
@@ -4754,7 +4772,7 @@ function openTile(id){
 if(id==='mistakes'){startMistakesReview();return}if(id==='write'){openWrite();showScreen('write')}
 else if(id==='dictation')startDictation();
 else if(id==='articles')startArticles();
-else if(id==='dialogue'){renderDialogueList();showScreen('dialogue')}
+else if(id==='dialogue'){showScreen('dialogue');renderDialogueList()}
 else if(id==='match')startMatch();
 else if(id==='phrases'){renderPhrases();showScreen('phrases')}
 else if(id==='templates'){renderTemplates();showScreen('templates')}
@@ -5592,10 +5610,62 @@ const DIALOGUES=[
 ]}
 ];
 let dlgActive=null,dlgStep=0,dlgMistakes=0;
-function renderDialogueList(){const el=document.getElementById('dialogueList');el.innerHTML='';
+async function getLearnedWords(limit){
+limit=limit||24;
+const decks=filterDecksForUi(await loadDecks());
+let words=[];
+for(const d of decks){
+  const cards=await loadCards(d.id);
+  for(const c of cards){
+    if(!isPlayableCard(c))continue;
+    const score=(c.reps||0)*2+(c.box||1)+(c.lapses?0:1);
+    words.push({de:primarySide(c,'de'),ru:primarySide(c,'ru'),score,box:c.box||1});
+  }
+}
+words.sort((a,b)=>b.score-a.score);
+// unique by de
+const seen=new Set();const out=[];
+for(const w of words){if(seen.has(w.de))continue;seen.add(w.de);out.push(w);if(out.length>=limit)break}
+return out;
+}
+function buildStoryDialogue(words){
+const w=words.slice(0,8);
+const pick=()=>w[Math.floor(Math.random()*w.length)]||{de:'Kaffee',ru:'кофе'};
+const a=pick(),b=pick(),c=pick();
+const title=(uiLang==='ru'||uiLang==='uk')?'История из твоих слов':'Story from your words';
+return {id:'story-'+Date.now(),icon:'✨',titleKey:'',title:title,story:true,steps:[
+  {type:'say',who:'Erzähler',de:'Du bist in der Stadt. Jemand fragt nach: '+a.de+'.',ru:'Ты в городе. Кто-то спрашивает про: '+a.ru+'.'},
+  {type:'choose',options:[
+    {de:'Ja, ich kenne '+a.de+'.',ru:'Да, я знаю «'+a.ru+'».',correct:true},
+    {de:'Ich bin ein Flugzeug.',ru:'Я самолёт.',correct:false},
+    {de:'Das Wetter ist lila.',ru:'Погода фиолетовая.',correct:false}]},
+  {type:'say',who:'Freund',de:'Komm, wir brauchen auch '+b.de+'.',ru:'Пойдём, нам ещё нужно: '+b.ru+'.'},
+  {type:'choose',options:[
+    {de:'Gute Idee. Wo finden wir '+b.de+'?',ru:'Хорошая идея. Где найти «'+b.ru+'»?',correct:true},
+    {de:'Ich hasse alle Wörter.',ru:'Я ненавижу все слова.',correct:false},
+    {de:'Der Mond ist aus Käse.',ru:'Луна из сыра.',correct:false}]},
+  {type:'say',who:'Verkäufer',de:'Heute gibt es '+c.de+' im Angebot!',ru:'Сегодня «'+c.ru+'» по акции!'},
+  {type:'choose',options:[
+    {de:'Perfekt, ich nehme '+c.de+'.',ru:'Отлично, беру «'+c.ru+'».',correct:true},
+    {de:'Nein, ich kaufe ein Schloss.',ru:'Нет, я куплю замок.',correct:false},
+    {de:'Ich spreche nur Latein.',ru:'Я говорю только на латыни.',correct:false}]},
+  {type:'say',who:'Erzähler',de:'Ende der Geschichte. Deine Wörter haben die Stadt gerettet!',ru:'Конец истории. Твои слова спасли город!'}
+]};
+}
+async function renderDialogueList(){const el=document.getElementById('dialogueList');el.innerHTML='';
 document.getElementById('dialoguePlay').classList.add('hidden');el.classList.remove('hidden');
 DIALOGUES.forEach(d=>{const b=document.createElement('button');b.className='mini-card';b.style.cssText='width:100%;border:none;text-align:left';
-b.innerHTML='<div class="txt"><div class="de">'+d.icon+' '+t(d.titleKey)+'</div></div>';b.onclick=()=>playDialogue(d);el.appendChild(b)})}
+b.innerHTML='<div class="txt"><div class="de">'+d.icon+' '+(d.titleKey?t(d.titleKey):(d.title||d.id))+'</div></div>';b.onclick=()=>playDialogue(d);el.appendChild(b)});
+// Story from learned words
+const storyBtn=document.createElement('button');storyBtn.className='mini-card';storyBtn.style.cssText='width:100%;border:none;text-align:left';
+storyBtn.innerHTML='<div class="txt"><div class="de">✨ '+(t('dlg_story')||'История из твоих слов')+'<span class="story-dlg-badge">NEW</span></div><div class="ru" style="font-size:.75rem;opacity:.7">'+(t('dlg_story_hint')||'Диалог собирается из слов, которые ты учишь')+'</div></div>';
+storyBtn.onclick=async()=>{
+  const words=await getLearnedWords(20);
+  if(words.length<3){showToast(t('dlg_story_need')||'Нужно хотя бы несколько слов в колодах','err');return}
+  playDialogue(buildStoryDialogue(words));
+};
+el.appendChild(storyBtn);
+}
 function playDialogue(d){dlgActive=d;dlgStep=0;dlgMistakes=0;document.getElementById('dialogueList').classList.add('hidden');document.getElementById('dialoguePlay').classList.remove('hidden');
 document.getElementById('dlgDone').classList.add('hidden');showDlgStep()}
 function showDlgStep(){const steps=dlgActive.steps;const step=steps[dlgStep];document.getElementById('dlgProgress').style.width=(dlgStep/steps.length*100)+'%';
@@ -5624,25 +5694,69 @@ const RANKS=[
 {id:'meister',minXp:2000,minIron:20,name:{ru:'Meister',en:'Meister',de:'Meister',uk:'Meister'}}
 ];
 const BOOSTER_POOL=[
-{id:'b1',de:'jemandem einen Bären aufbinden',ru:'втирать очки / обманывать',en:'to pull someone’s leg',rarity:'rare',tag:'Idiom'},
-{id:'b2',de:'die Kirche im Dorf lassen',ru:'не сгущать краски',en:'don’t overdo it',rarity:'common',tag:'Idiom'},
-{id:'b3',de:'Tomaten auf den Augen haben',ru:'не замечать очевидного',en:'to be blind to the obvious',rarity:'rare',tag:'Idiom'},
-{id:'b4',de:'Schwein haben',ru:'повезти',en:'to be lucky',rarity:'common',tag:'Idiom'},
-{id:'b5',de:'ins Fettnäpfchen treten',ru:'допустить бестактность',en:'to put one’s foot in it',rarity:'epic',tag:'Idiom'},
-{id:'b6',de:'Null Bock',ru:'ноль желания',en:'can’t be bothered',rarity:'common',tag:'Slang'},
-{id:'b7',de:'krass',ru:'жёстко / круто',en:'intense / cool',rarity:'common',tag:'Slang'},
-{id:'b8',de:'Digga',ru:'братан (молодёжн.)',en:'dude (youth slang)',rarity:'common',tag:'Slang'},
-{id:'b9',de:'auf dem Schlauch stehen',ru:'тупить / не врубаться',en:'to be slow on the uptake',rarity:'rare',tag:'Idiom'},
-{id:'b10',de:'das Gelbe vom Ei',ru:'самое лучшее',en:'the best part / ideal',rarity:'epic',tag:'Idiom'},
-{id:'b11',de:'Himmel und Hölle in Bewegung setzen',ru:'свернуть горы',en:'to move heaven and earth',rarity:'legend',tag:'Idiom'},
-{id:'b12',de:'Kopf hoch!',ru:'выше нос!',en:'chin up!',rarity:'common',tag:'Phrase'},
-{id:'b13',de:'Mach doch nicht so einen Stress!',ru:'не нагнетай!',en:'don’t stress out!',rarity:'rare',tag:'Slang'},
-{id:'b14',de:'Ich ticke nicht mehr',ru:'я уже не соображаю',en:'I’m losing it',rarity:'rare',tag:'Slang'},
-{id:'b15',de:'Das ist mir Wurst',ru:'мне всё равно',en:'I don’t care',rarity:'common',tag:'Idiom'},
-{id:'b16',de:'Fix und fertig sein',ru:'быть вымотанным',en:'to be worn out',rarity:'common',tag:'Idiom'},
-{id:'b17',de:'etwas aus dem Effeff beherrschen',ru:'знать назубок',en:'to know inside out',rarity:'epic',tag:'Idiom'},
-{id:'b18',de:'mit dem Klammerbeutel gepudert sein',ru:'с приветом',en:'to have a screw loose',rarity:'legend',tag:'Idiom'}
+// —— Idioms / characters of Berlin night school ——
+{id:'b1',de:'jemandem einen Bären aufbinden',ru:'втирать очки',en:'pull someone’s leg',rarity:'rare',tag:'Idiom',char:'Bär Bruno',emoji:'🐻',lore:{ru:'Бруно когда-то продал туристам «настоящий» Берлинский миф. С тех пор идиома — его визитка.',en:'Bruno once sold tourists a “real” Berlin myth. The idiom stuck to him.'}},
+{id:'b2',de:'die Kirche im Dorf lassen',ru:'не сгущать краски',en:'don’t overdo it',rarity:'common',tag:'Idiom',char:'Pfarrer Klaus',emoji:'⛪',lore:{ru:'Клаус всегда говорит: «Оставь церковь в деревне» — не раздувай проблему.',en:'Klaus always says: leave the church in the village — don’t blow it up.'}},
+{id:'b3',de:'Tomaten auf den Augen haben',ru:'не замечать очевидного',en:'blind to the obvious',rarity:'rare',tag:'Idiom',char:'Gärtnerin Mia',emoji:'🍅',lore:{ru:'Миа клянётся, что помидоры на глазах — это не салат, а диагноз рассеянности.',en:'Mia swears tomatoes on the eyes are a diagnosis of cluelessness.'}},
+{id:'b4',de:'Schwein haben',ru:'повезти',en:'to be lucky',rarity:'common',tag:'Idiom',char:'Glücksschwein Pip',emoji:'🐷',lore:{ru:'Пип появляется только в удачный день. Если увидел — не спорь с судьбой.',en:'Pip only shows up on lucky days. Don’t argue with fate.'}},
+{id:'b5',de:'ins Fettnäpfchen treten',ru:'допустить бестактность',en:'put one’s foot in it',rarity:'epic',tag:'Idiom',char:'Diplomat Otto',emoji:'🧈',lore:{ru:'Отто однажды на приёме «наступил в маслёнку». Теперь учит других не повторять.',en:'Otto once stepped into the butter dish at a reception. He teaches caution now.'}},
+{id:'b6',de:'Null Bock',ru:'ноль желания',en:'zero motivation',rarity:'common',tag:'Slang',char:'Teen Leo',emoji:'😒',lore:{ru:'Лео изобрёл выражение лица «Null Bock». Работает без слов.',en:'Leo invented the “Null Bock” face. Works without words.'}},
+{id:'b7',de:'krass',ru:'жёстко / круто',en:'intense / crazy',rarity:'common',tag:'Slang',char:'DJ Nox',emoji:'🎧',lore:{ru:'Нокс говорит «krass» на каждый дроп. Словарь уже сдался.',en:'Nox says “krass” on every drop. The dictionary gave up.'}},
+{id:'b8',de:'Digga',ru:'братан',en:'dude',rarity:'common',tag:'Slang',char:'Kiez-Kalle',emoji:'🧢',lore:{ru:'Калле из Кихе зовёт всех Digga. Даже автобус.',en:'Kalle from the Kiez calls everyone Digga. Even the bus.'}},
+{id:'b9',de:'auf dem Schlauch stehen',ru:'тупить',en:'be slow on the uptake',rarity:'rare',tag:'Idiom',char:'Feuerwehr Franzi',emoji:'🚒',lore:{ru:'Франци знает: стоять на шланге — плохая идея и в огне, и в разговоре.',en:'Franzi knows: standing on the hose is bad in fire and in chat.'}},
+{id:'b10',de:'das Gelbe vom Ei',ru:'самое лучшее',en:'the bee’s knees',rarity:'epic',tag:'Idiom',char:'Koch Renate',emoji:'🍳',lore:{ru:'Рената отдаёт только желток — «самое лучшее из яйца».',en:'Renate only serves the yolk — the best of the egg.'}},
+{id:'b11',de:'Himmel und Hölle in Bewegung setzen',ru:'свернуть горы',en:'move heaven and earth',rarity:'legend',tag:'Idiom',char:'Heldin Freya',emoji:'⚡',lore:{ru:'Фрейя однажды сдвинула и небо, и ад ради одного билета на концерт.',en:'Freya once moved heaven and hell for one concert ticket.'}},
+{id:'b12',de:'Kopf hoch!',ru:'выше нос!',en:'chin up!',rarity:'common',tag:'Phrase',char:'Coach Jana',emoji:'🆙',lore:{ru:'Яна поднимает подбородки на станции Zoo. Бесплатно.',en:'Jana lifts chins at Zoo station. Free of charge.'}},
+{id:'b13',de:'Mach doch nicht so einen Stress!',ru:'не нагнетай!',en:'don’t stress out!',rarity:'rare',tag:'Slang',char:'Yogi Sam',emoji:'🧘',lore:{ru:'Сэм дышит глубже, чем Берлинское U-Bahn в час пик.',en:'Sam breathes deeper than Berlin U-Bahn at rush hour.'}},
+{id:'b14',de:'Ich ticke nicht mehr',ru:'я уже не соображаю',en:'I’m losing it',rarity:'rare',tag:'Slang',char:'Uhrwerk Uli',emoji:'🕰️',lore:{ru:'Ули — часовой механизм с заедающей шестернёй. Иногда тикает мимо.',en:'Uli is a clockwork with a stuck gear. Sometimes ticks wrong.'}},
+{id:'b15',de:'Das ist mir Wurst',ru:'мне всё равно',en:'I don’t care',rarity:'common',tag:'Idiom',char:'Metzger Hans',emoji:'🌭',lore:{ru:'Ганс говорит это с гордостью мясника. Всё — колбаса.',en:'Hans says it with butcher’s pride. Everything is sausage.'}},
+{id:'b16',de:'Fix und fertig sein',ru:'быть вымотанным',en:'worn out',rarity:'common',tag:'Idiom',char:'Pendler Petra',emoji:'🚇',lore:{ru:'Петра после S-Bahn выглядит «fix und fertig» — и это комплимент выживанию.',en:'Petra after the S-Bahn looks fix und fertig — a survival badge.'}},
+{id:'b17',de:'etwas aus dem Effeff beherrschen',ru:'знать назубок',en:'know inside out',rarity:'epic',tag:'Idiom',char:'Professor Eff',emoji:'📚',lore:{ru:'Профессор Эфф знает всё «из FF» — от фонетики до фастфуда.',en:'Professor Eff knows everything from the FF — phonetics to fries.'}},
+{id:'b18',de:'mit dem Klammerbeutel gepudert sein',ru:'с приветом',en:'have a screw loose',rarity:'legend',tag:'Idiom',char:'Clown Zippi',emoji:'🤡',lore:{ru:'Зиппи припудрен не пудрой, а прищепочным мешком. Классика.',en:'Zippi is powdered with a peg bag. Classic weird.'}},
+{id:'b19',de:'Die Daumen drücken',ru:'болеть / желать удачи',en:'keep fingers crossed',rarity:'common',tag:'Idiom',char:'Fan Feline',emoji:'🤞',lore:{ru:'Фелина жмёт большие пальцы так сильно, что иногда помогает.',en:'Feline presses thumbs so hard it sometimes works.'}},
+{id:'b20',de:'Einen Kater haben',ru:'похмелье',en:'have a hangover',rarity:'common',tag:'Idiom',char:'Kater Karl',emoji:'🐈',lore:{ru:'Карл — не кот. Карл — состояние после праздника.',en:'Karl is not a cat. Karl is the morning after.'}},
+{id:'b21',de:'Alles hat ein Ende, nur die Wurst hat zwei',ru:'всё кончается, кроме колбасы',en:'everything ends — except sausage',rarity:'rare',tag:'Idiom',char:'Philosoph Wurst',emoji:'🌭',lore:{ru:'Единственный оптимист в мясной лавке.',en:'The only optimist in the butcher shop.'}},
+{id:'b22',de:'Ich verstehe nur Bahnhof',ru:'ничего не понимаю',en:'it’s all Greek to me',rarity:'rare',tag:'Idiom',char:'Tourist Tim',emoji:'🚉',lore:{ru:'Тим понимает только слово «вокзал». Остальное — шум путей.',en:'Tim only understands “station”. The rest is track noise.'}},
+{id:'b23',de:'Luft nach oben',ru:'есть куда расти',en:'room for improvement',rarity:'common',tag:'Idiom',char:'Pilotikerin Lina',emoji:'🎈',lore:{ru:'Лина всегда оставляет воздух наверх — в шариках и в карьере.',en:'Lina always leaves air upwards — in balloons and careers.'}},
+{id:'b24',de:'Unter vier Augen',ru:'с глазу на глаз',en:'in private',rarity:'common',tag:'Idiom',char:'Spionin Svea',emoji:'👁️',lore:{ru:'Свеа ведёт разговоры только на четыре глаза. Пятое лишнее.',en:'Svea only talks under four eyes. A fifth is too many.'}},
+{id:'b25',de:'Den Nagel auf den Kopf treffen',ru:'попасть в точку',en:'hit the nail on the head',rarity:'rare',tag:'Idiom',char:'Schmied Thor',emoji:'🔨',lore:{ru:'Тор попадает гвоздём в голову… метафоры. Буквально — только в доску.',en:'Thor hits the nail on the head — of metaphors. Boards only IRL.'}},
+{id:'b26',de:'Chillig',ru:'спокойно / расслабленно',en:'chill',rarity:'common',tag:'Slang',char:'Skater Sky',emoji:'🛹',lore:{ru:'Скай делает всё chillig, кроме сдачи на права.',en:'Sky does everything chillig except the driving test.'}},
+{id:'b27',de:'Bock haben',ru:'иметь желание',en:'to feel like doing',rarity:'common',tag:'Slang',char:'Motivator Mo',emoji:'🐐',lore:{ru:'Мо спрашивает: «Hast du Bock?» Ответ решает судьбу вечера.',en:'Mo asks: “Hast du Bock?” The answer decides the night.'}},
+{id:'b28',de:'Geil',ru:'круто (разг.)',en:'awesome (colloquial)',rarity:'common',tag:'Slang',char:'Influencer Ina',emoji:'✨',lore:{ru:'Ина ставит «geil» под каждый закат. Солнце не против.',en:'Ina comments “geil” under every sunset. The sun doesn’t mind.'}},
+{id:'b29',de:'Handy',ru:'мобильный телефон',en:'mobile phone',rarity:'common',tag:'Slang',char:'Tech Theo',emoji:'📱',lore:{ru:'Тео до сих пор зовёт телефон «Handy». Бабушка гордится.',en:'Theo still calls it Handy. Grandma is proud.'}},
+{id:'b30',de:'Bescheuert',ru:'тупой / дурацкий',en:'stupid / daft',rarity:'rare',tag:'Slang',char:'Critic Cora',emoji:'😤',lore:{ru:'Кора использует слово редко — и оттого оно бьёт сильнее.',en:'Cora uses it rarely — that’s why it hits harder.'}},
+{id:'b31',de:'Auf jeden Fall',ru:'в любом случае / точно',en:'definitely',rarity:'common',tag:'Phrase',char:'Yes-Man Yann',emoji:'👍',lore:{ru:'Янн согласен на всё. Кроме ранних пар.',en:'Yann agrees to everything. Except early classes.'}},
+{id:'b32',de:'Kein Plan',ru:'без понятия',en:'no idea',rarity:'common',tag:'Slang',char:'Lost Lotte',emoji:'🗺️',lore:{ru:'Лотте честно говорит «Kein Plan» — и все уважают.',en:'Lotte says “Kein Plan” honestly — and earns respect.'}},
+{id:'b33',de:'Die Katze im Sack kaufen',ru:'покупать кота в мешке',en:'buy a pig in a poke',rarity:'rare',tag:'Idiom',char:'Händler Hektor',emoji:'🛍️',lore:{ru:'Гектор никогда не продаёт котов в мешках. Только прозрачные пакеты.',en:'Hector never sells cats in sacks. Only clear bags.'}},
+{id:'b34',de:'Um den heißen Brei herumreden',ru:'ходить вокруг да около',en:'beat around the bush',rarity:'epic',tag:'Idiom',char:'Redner Rudi',emoji:'🍲',lore:{ru:'Руди может час говорить вокруг каши. Каша остывает первой.',en:'Rudi can talk around the porridge for an hour. The porridge cools first.'}},
+{id:'b35',de:'Da steppt der Bär',ru:'там будет жарко / тусовка',en:'it’s going to be a blast',rarity:'epic',tag:'Idiom',char:'Party Bär',emoji:'🐻',lore:{ru:'Когда степает медведь — Берлин не спит.',en:'When the bear steps, Berlin doesn’t sleep.'}},
+{id:'b36',de:'Ich bin raus',ru:'я пас / выхожу',en:'I’m out',rarity:'common',tag:'Slang',char:'Gamer Gina',emoji:'🎮',lore:{ru:'Джина выходит из рейда раньше всех — и сохраняет HP.',en:'Gina leaves the raid early — and keeps her HP.'}},
+{id:'b37',de:'Stark!',ru:'сильно! / круто!',en:'strong! / nice!',rarity:'common',tag:'Slang',char:'Coach Cem',emoji:'💪',lore:{ru:'Джем орёт «Stark!» даже когда ты просто встал с дивана.',en:'Cem yells “Stark!” even when you just left the couch.'}},
+{id:'b38',de:'In den sauren Apfel beißen',ru:'делать неприятное',en:'bite the bullet',rarity:'rare',tag:'Idiom',char:'Lehrerin Lea',emoji:'🍏',lore:{ru:'Леа заставляет кусать кислое яблоко — домашнее задание.',en:'Lea makes you bite the sour apple — homework.'}},
+{id:'b39',de:'Das haut mich um',ru:'меня это убивает / вау',en:'that blows me away',rarity:'rare',tag:'Slang',char:'Fanboy Finn',emoji:'💥',lore:{ru:'Финн падает от любого твиста. Буквально на пол в кино.',en:'Finn falls for every plot twist. Literally on the cinema floor.'}},
+{id:'b40',de:'Voll nett',ru:'очень мило',en:'really nice',rarity:'common',tag:'Slang',char:'Nachbarin Nila',emoji:'🌸',lore:{ru:'Нила говорит «voll nett» пекарю, кондуктору и дождю.',en:'Nila says “voll nett” to bakers, drivers, and rain.'}},
+{id:'b41',de:'Sich zum Affen machen',ru:'выставлять себя дураком',en:'make a fool of oneself',rarity:'epic',tag:'Idiom',char:'Affe Anton',emoji:'🐵',lore:{ru:'Антон — профессиональный «обезьяний» момент на корпоративе.',en:'Anton is a professional monkey moment at office parties.'}},
+{id:'b42',de:'Klaro',ru:'ясно / ок',en:'got it / sure',rarity:'common',tag:'Slang',char:'Barista Bea',emoji:'☕',lore:{ru:'Беа отвечает «Klaro» быстрее, чем готовит капучино.',en:'Bea says “Klaro” faster than she makes cappuccino.'}},
+{id:'b43',de:'Die gleiche Wellenlänge',ru:'на одной волне',en:'on the same wavelength',rarity:'rare',tag:'Idiom',char:'Radio Rio',emoji:'📡',lore:{ru:'Рио ловит только тех, кто на его частоте.',en:'Rio only tunes people on his frequency.'}},
+{id:'b44',de:'Aus dem Häuschen sein',ru:'быть в восторге',en:'be over the moon',rarity:'epic',tag:'Idiom',char:'Oma Hilde',emoji:'🏠',lore:{ru:'Хильда выходит из домика от радости — и зовёт всех на торт.',en:'Hilde leaves her little house from joy — and serves cake.'}},
+{id:'b45',de:'Bullshit',ru:'чушь',en:'nonsense',rarity:'rare',tag:'Slang',char:'Editor Edda',emoji:'📝',lore:{ru:'Эдда вычёркивает bullshit красным. Безжалостно.',en:'Edda cuts bullshit in red. Ruthlessly.'}},
+{id:'b46',de:'Sich etwas hinter die Ohren schreiben',ru:'зарубить на носу',en:'mark my words',rarity:'rare',tag:'Idiom',char:'Oma Else',emoji:'👂',lore:{ru:'Эльза пишет за ушами мелом. Смывается только к экзамену.',en:'Else writes behind ears with chalk. Washes off at the exam.'}},
+{id:'b47',de:'Nachtmensch',ru:'сова',en:'night owl',rarity:'common',tag:'Slang',char:'Eule Eno',emoji:'🦉',lore:{ru:'Эно начинает жить после 23:00. Утро для него — миф.',en:'Eno starts living after 11pm. Morning is a myth.'}},
+{id:'b48',de:'Frühaufsteher',ru:'жаворонок',en:'early bird',rarity:'common',tag:'Slang',char:'Hahn Hanno',emoji:'🐓',lore:{ru:'Ханно встаёт с петухами. И шлёт всем голосовые в 6:00.',en:'Hanno rises with the roosters. Voice messages at 6am.'}},
+{id:'b49',de:'Das ist nicht mein Bier',ru:'это не мои проблемы',en:'not my problem',rarity:'epic',tag:'Idiom',char:'Brauer Ben',emoji:'🍺',lore:{ru:'Бен разливает только своё пиво. Чужие проблемы — в другую кружку.',en:'Ben only pours his beer. Other problems go in another mug.'}},
+{id:'b50',de:'Wahnsinn!',ru:'безумие! / невероятно!',en:'insanity! / amazing!',rarity:'common',tag:'Phrase',char:'Reporter Rita',emoji:'🎤',lore:{ru:'Рита кричит «Wahnsinn!» чаще, чем передаёт новости.',en:'Rita yells “Wahnsinn!” more often than she reports news.'}},
+{id:'b51',de:'Sich die Karte reinschieben',ru:'забить / забить болт',en:'not give a damn',rarity:'legend',tag:'Slang',char:'Rebel Rex',emoji:'🃏',lore:{ru:'Рекс «засовывает карту» в проблемы и идёт гулять.',en:'Rex slides the card into problems and goes for a walk.'}},
+{id:'b52',de:'Bammel haben',ru:'бояться / трусить',en:'be scared',rarity:'rare',tag:'Slang',char:'Mutprobe Max',emoji:'😰',lore:{ru:'Макс боится всего — и всё равно прыгает. Bammel как топливо.',en:'Max fears everything — and jumps anyway. Fear as fuel.'}},
+{id:'b53',de:'Die Nase voll haben',ru:'достало',en:'be fed up',rarity:'rare',tag:'Idiom',char:'Allergikerin Ada',emoji:'👃',lore:{ru:'У Ады нос полон пыльцы и дедлайнов.',en:'Ada’s nose is full of pollen and deadlines.'}},
+{id:'b54',de:'Lockdown',ru:'локдаун',en:'lockdown',rarity:'common',tag:'Slang',char:'Historian Hugo',emoji:'🔒',lore:{ru:'Гуго помнит слово, которое изменило календарь вечеринок.',en:'Hugo remembers the word that rewrote party calendars.'}},
+{id:'b55',de:'Homeoffice',ru:'удалёнка',en:'working from home',rarity:'common',tag:'Slang',char:'Cat Boss',emoji:'🐈‍⬛',lore:{ru:'Настоящий босс homeoffice сидит на клавиатуре.',en:'The real homeoffice boss sits on the keyboard.'}},
+{id:'b56',de:'Querdenker',ru:'человек со своим мнением (ирон.)',en:'contrarian (often ironic)',rarity:'epic',tag:'Slang',char:'Thinker Theo',emoji:'🧠',lore:{ru:'Тео думает поперёк. Иногда полезно. Иногда — окно.',en:'Theo thinks sideways. Sometimes useful. Sometimes a window.'}},
+{id:'b57',de:'Spazieren gehen',ru:'гулять',en:'go for a walk',rarity:'common',tag:'Phrase',char:'Walker Willi',emoji:'🚶',lore:{ru:'Вилли решает все конфликты прогулкой вокруг квартала.',en:'Willi solves conflicts with a block walk.'}},
+{id:'b58',de:'Ich melde mich',ru:'я напишу / дам знать',en:'I’ll get in touch',rarity:'common',tag:'Phrase',char:'Ghost Gero',emoji:'👻',lore:{ru:'Геро говорит «Ich melde mich» и исчезает на три дня.',en:'Gero says “Ich melde mich” and vanishes for three days.'}},
+{id:'b59',de:'Tschüssikowski',ru:'пока-пока (игриво)',en:'bye-bye (playful)',rarity:'rare',tag:'Slang',char:'Abschied Anna',emoji:'👋',lore:{ru:'Анна прощается длиннее, чем остаётся в гостях.',en:'Anna’s goodbye lasts longer than her visit.'}},
+{id:'b60',de:'Auf geht\'s!',ru:'поехали!',en:'let’s go!',rarity:'common',tag:'Phrase',char:'Captain Kai',emoji:'🚀',lore:{ru:'Кай запускает день одной фразой. Даже понедельники.',en:'Kai launches the day with one phrase. Even Mondays.'}}
 ];
+
 async function loadCollection(){return getJSON('collection',{owned:[],packsOpened:0,pendingPack:false,lastGoalDay:null,packsGrantedDay:null})}
 async function saveCollection(c){return setJSON('collection',c)}
 function rankFor(st){
@@ -5685,6 +5799,20 @@ const ti=document.getElementById('boosterTitle');if(ti)ti.textContent=t('pack_re
 const su=document.getElementById('boosterSub');if(su)su.textContent=t('pack_sub')||'';
 const ob=document.getElementById('openPackBtn');if(ob)ob.textContent=t('open_pack')||'Open pack';
 }
+function loreText(c){
+const L=c.lore||{};
+return L[uiLang]||L.ru||L.en||L.de||'';
+}
+function loreCardHTML(c,mini){
+const rare=c.rarity||'common';
+const art=c.emoji||'🃏';
+const char=c.char||c.tag||'';
+const lore=loreText(c);
+if(mini){
+return '<div class="coll-chip lore-mini r-'+rare+'"><div class="mini-art" style="background:inherit">'+art+'</div><div style="padding:.5rem .6rem"><div class="de" style="font-weight:700">'+escapeHtml(c.de)+'</div><div style="opacity:.7;font-size:.75rem">'+escapeHtml(c.ru)+'</div><div class="rarity" style="font-size:.65rem;margin-top:.2rem">'+rarityLabel(rare)+' · '+escapeHtml(char)+'</div></div></div>';
+}
+return '<div class="lore-card r-'+rare+'"><div class="art">'+art+'</div><div class="body"><div class="char">'+escapeHtml(char)+' · '+rarityLabel(rare)+'</div><div class="de">'+escapeHtml(c.de)+'</div><div class="ru">'+escapeHtml(c.ru)+(c.en?' · '+escapeHtml(c.en):'')+'</div>'+(lore?'<div class="lore">'+escapeHtml(lore)+'</div>':'')+'</div></div>';
+}
 function rarityLabel(r){
 const map={common:'rarity_common',rare:'rarity_rare',epic:'rarity_epic',legend:'rarity_legend'};
 return t(map[r]||'rarity_common')||r;
@@ -5713,7 +5841,7 @@ const cards=pickPackCards(col.owned||[],3);
 const reveal=document.getElementById('packReveal');
 if(reveal){
 reveal.classList.remove('hidden');
-reveal.innerHTML=cards.map(c=>'<div class="pack-card r-'+c.rarity+'"><div class="rarity">'+rarityLabel(c.rarity)+' · '+c.tag+'</div><div class="de">'+escapeHtml(c.de)+'</div><div class="ru">'+escapeHtml(c.ru)+'</div></div>').join('');
+reveal.innerHTML=cards.map(c=>loreCardHTML(c,false)).join('');
 }
 for(const c of cards){if(!(col.owned||[]).includes(c.id))col.owned.push(c.id)}
 col.pendingPack=false;col.packsOpened=(col.packsOpened||0)+1;
@@ -5732,7 +5860,7 @@ const owned=new Set(col.owned||[]);
 const list=BOOSTER_POOL.filter(c=>owned.has(c.id));
 if(empty){empty.style.display=list.length?'none':'block';empty.textContent=t('coll_empty')||''}
 if(grid){
-grid.innerHTML=list.map(c=>'<div class="coll-chip"><div class="de">'+escapeHtml(c.de)+'</div><div style="opacity:.7">'+escapeHtml(c.ru)+'</div><div class="rarity" style="font-size:.65rem;margin-top:.2rem">'+rarityLabel(c.rarity)+'</div></div>').join('');
+grid.innerHTML=list.map(c=>loreCardHTML(c,false)).join('');
 }
 const lt=document.getElementById('collListTitle');if(lt)lt.textContent=t('coll_title')||'Collection';
 const op=document.getElementById('openPackBtn');if(op)op.onclick=()=>openBoosterPack();
