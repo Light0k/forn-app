@@ -59,7 +59,7 @@ input,select,textarea{font-family:inherit;color:var(--ink)}
 .stamp{width:28px;height:28px;border-radius:8px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--paper);flex:none}.stamp svg{display:block}
 .back-btn,.icon-btn{background:none;border:none;color:var(--ink-soft);border-radius:10px;padding:.4rem;min-width:42px;min-height:42px;display:inline-flex;align-items:center;justify-content:center}
 .back-btn{font-size:1.45rem}.icon-btn{font-size:1.1rem}.icon-btn svg,.stamp svg{display:block;pointer-events:none}.icon-btn svg{opacity:.85}.icon-btn:hover svg{opacity:1}
-.screen{display:none;flex:1;flex-direction:column}.screen.active{display:flex}
+.screen{display:none;flex:1;flex-direction:column;justify-content:flex-start;align-items:stretch}.screen.active{display:flex}
 .intro{margin:0 0 1rem;color:var(--ink-soft);font-size:.875rem;line-height:1.5;font-weight:450}
 .box{background:var(--card);border-radius:var(--radius-lg);padding:1rem;box-shadow:0 1px 3px var(--shadow);border:1px solid var(--border);position:relative;margin-bottom:1.5rem}
 .box-decks{padding-top:1.85rem}
@@ -75,8 +75,15 @@ input,select,textarea{font-family:inherit;color:var(--ink)}
 .empty-box{color:var(--ink-soft);text-align:center;padding:1.5rem;font-size:.875rem}
 .fab{position:fixed;right:1.1rem;bottom:calc(1.1rem + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;font-size:1.5rem;box-shadow:0 4px 16px var(--shadow-md);display:flex;align-items:center;justify-content:center;z-index:25}
 .fab.hidden{display:none}
-.home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-bottom:1.25rem}
-.home-tile{background:var(--card);border-radius:12px;padding:.55rem .3rem;text-align:center;border:1px solid var(--border);color:var(--ink);font-weight:600;font-size:.68rem;display:flex;flex-direction:column;align-items:center;gap:.15rem;min-height:58px}
+.home-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem;margin:0 0 .85rem;flex:0 0 auto}
+@media(min-width:380px){.home-grid{grid-template-columns:repeat(3,1fr);gap:.5rem}}
+@media(min-width:700px){.home-grid{grid-template-columns:repeat(4,1fr);gap:.55rem}}
+.home-tile{background:var(--card);border-radius:14px;padding:.7rem .4rem;text-align:center;border:1px solid var(--border);color:var(--ink);font-weight:600;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:.25rem;min-height:68px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;animation:fadeUp .35s ease both}
+.home-tile:nth-child(1){animation-delay:.02s}.home-tile:nth-child(2){animation-delay:.04s}.home-tile:nth-child(3){animation-delay:.06s}
+.home-tile:nth-child(4){animation-delay:.08s}.home-tile:nth-child(5){animation-delay:.1s}.home-tile:nth-child(6){animation-delay:.12s}
+.home-tile:active{transform:scale(.96)}
+.home-tile:hover{border-color:var(--ink-soft);box-shadow:0 2px 10px var(--shadow)}
+.home-tile .ico{font-size:1.25rem;line-height:1.2}
 .home-tile .ico{font-size:1.25rem;line-height:1;margin-bottom:.1rem;opacity:.9}
 .home-tile span:last-child{font-size:.7rem;font-weight:600;opacity:.8}
 .btn{border:none;border-radius:10px;padding:.6rem 1rem;font-size:.875rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;min-height:42px}
@@ -331,6 +338,35 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .coll-chip .mini-art{height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .coll-chip .mini-art svg{width:100%;height:100%}
 .story-dlg-badge{font-size:.65rem;opacity:.7;margin-left:.3rem}
+
+/* --- home polish --- */
+.today-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.75rem 1rem;margin-bottom:.85rem;box-shadow:0 1px 3px var(--shadow);animation:fadeUp .3s ease}
+.today-top{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.today-kicker{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:.2rem}
+.today-body{font-size:.84rem;line-height:1.4;color:var(--ink)}
+.today-body b{font-weight:700}
+.today-go{flex:none;min-width:5.5rem}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:.35rem 0 .4rem}
+.tips-panel{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:0 0 .85rem;padding:0;overflow:hidden;animation:fadeUp .35s ease}
+.tips-panel summary{list-style:none;cursor:pointer;padding:.7rem 1rem;font-weight:600;font-size:.84rem;color:var(--ink);user-select:none;display:flex;align-items:center;gap:.35rem}
+.tips-panel summary::-webkit-details-marker{display:none}
+.tips-panel summary::after{content:'▸';margin-left:auto;opacity:.5;transition:transform .2s}
+.tips-panel[open] summary::after{transform:rotate(90deg)}
+.tips-body{padding:0 1rem 0.9rem;font-size:.8rem;line-height:1.5;color:var(--ink-soft)}
+.tips-body .tip-h{font-weight:700;color:var(--ink);margin:.55rem 0 .2rem;font-size:.8rem}
+.tips-body ul{margin:.2rem 0 .4rem;padding-left:1.1rem}
+.tips-body li{margin:.15rem 0}
+.fade-in{animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.screen{animation:fadeUp .25s ease}
+.deck-row{display:flex;flex-direction:column;gap:.4rem}
+.mini-card{transition:transform .15s ease,box-shadow .15s ease}
+.mini-card:active{transform:scale(.98)}
+.btn{transition:transform .12s ease,opacity .12s ease,background .15s ease}
+.btn:active{transform:scale(.97)}
+.box-decks{margin-bottom:.85rem}
+#dailyPlanBox .card-sub{margin:0}
+
 </style>
 
 </head>
@@ -367,16 +403,30 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 <button class="btn btn-outline" id="scoreCardBtn">🏆</button>
 <button class="btn btn-outline" id="b2PackBtn" title="B1-B2 pack">B2</button>
 </div>
-<div class="box" id="dailyPlanBox" style="margin-bottom:.85rem;padding:.75rem 1rem">
-<div class="card-sub" id="dailyPlanTitle">Сегодня</div>
-<div id="dailyPlanBody" style="font-size:.85rem;line-height:1.45;margin-top:.35rem"></div>
-<div class="scan-actions" style="margin-top:.5rem;justify-content:flex-start">
-<button type="button" class="btn btn-primary btn-sm" id="dailyPlanGo">Начать</button>
+<div class="today-card" id="dailyPlanBox">
+  <div class="today-top">
+    <div>
+      <div class="today-kicker" id="dailyPlanTitle">Сегодня</div>
+      <div class="today-body" id="dailyPlanBody"></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm today-go" id="dailyPlanGo">Начать</button>
+  </div>
 </div>
-</div>
-<p class="help-line" id="helpLine"></p><div class="skill-row" id="skillRow"></div>
+
+<p class="section-label" id="modesLabel">Режимы</p>
+<p class="help-line" id="helpLine"></p>
+<div class="skill-row" id="skillRow"></div>
 <div class="home-grid" id="homeGrid"></div>
-<div class="box box-decks"><div class="deck-lang-bar" id="deckLangBar"></div><div class="deck-row" id="deckRow"></div></div>
+
+<details class="tips-panel fade-in" id="studyTipsPanel">
+  <summary id="studyTipsSummary">💡 Как учиться</summary>
+  <div class="tips-body" id="studyTipsBody"></div>
+</details>
+
+<div class="box box-decks fade-in">
+  <div class="deck-lang-bar" id="deckLangBar"></div>
+  <div class="deck-row" id="deckRow"></div>
+</div>
 </section>
 
 <section class="screen" id="screen-capture">
@@ -5573,11 +5623,34 @@ const UI={
   }
 };
 /** i18n lookup — uses UI packs */
+
+const EXTRA_I18N={
+ru:{streak_goal:'Серия · цель',drop_hint:'Нажми или перетащи',sync_group:'🔄 Группа',capture_intro:'Сфотографируй слова.',paste_intro:'Вставь список слов',review_intro:'Проверь поля',write_intro:'Тема и текст',parse:'Разобрать',save:'Сохранить',check:'Проверить',photo:'Фото',coll_empty:'Пока пусто',decks_label:'Колоды',intro:'Слова и письмо на немецком.',modes_label:'Режимы',due_short:'к повторению'},
+en:{streak_goal:'Streak · goal',drop_hint:'Tap or drop',sync_group:'🔄 Group',capture_intro:'Photo of your words.',paste_intro:'Paste a word list',review_intro:'Check the fields',write_intro:'Topic and text',parse:'Parse',save:'Save',check:'Check',photo:'Photo',coll_empty:'Empty for now',decks_label:'Decks',intro:'German words & writing.',modes_label:'Modes',due_short:'due'},
+de:{streak_goal:'Serie · Ziel',drop_hint:'Tippen oder ablegen',sync_group:'🔄 Gruppe',capture_intro:'Foto deiner Wörter.',paste_intro:'Wortliste einfügen',review_intro:'Felder prüfen',write_intro:'Thema und Text',parse:'Zerlegen',save:'Speichern',check:'Prüfen',photo:'Foto',coll_empty:'Noch leer',decks_label:'Decks',intro:'Deutsche Wörter & Schreiben.',modes_label:'Modi',due_short:'fällig'},
+uk:{streak_goal:'Серія · ціль',drop_hint:'Натисни або перетягни',sync_group:'🔄 Група',capture_intro:'Сфотографуй слова.',paste_intro:'Встав список слів',review_intro:'Перевір поля',write_intro:'Тема і текст',parse:'Розібрати',save:'Зберегти',check:'Перевірити',photo:'Фото',coll_empty:'Поки порожньо',decks_label:'Колоди',intro:'Слова і письмо німецькою.',modes_label:'Режими',due_short:'до повторення'},
+es:{streak_goal:'Racha · meta',drop_hint:'Toca o suelta',sync_group:'🔄 Grupo',capture_intro:'Foto de tus palabras.',paste_intro:'Pega una lista',review_intro:'Revisa los campos',write_intro:'Tema y texto',parse:'Analizar',save:'Guardar',check:'Comprobar',photo:'Foto',coll_empty:'Vacío',decks_label:'Mazos',intro:'Palabras y escritura en alemán.',modes_label:'Modos',due_short:'repaso'},
+fr:{streak_goal:'Série · objectif',drop_hint:'Touche ou dépose',sync_group:'🔄 Groupe',capture_intro:'Photo de tes mots.',paste_intro:'Colle une liste',review_intro:'Vérifie les champs',write_intro:'Sujet et texte',parse:'Analyser',save:'Enregistrer',check:'Vérifier',photo:'Photo',coll_empty:'Vide',decks_label:'Paquets',intro:'Mots et écriture en allemand.',modes_label:'Modes',due_short:'à revoir'},
+pl:{streak_goal:'Seria · cel',drop_hint:'Kliknij lub upuść',sync_group:'🔄 Grupa',capture_intro:'Zdjęcie słów.',paste_intro:'Wklej listę',review_intro:'Sprawdź pola',write_intro:'Temat i tekst',parse:'Rozbij',save:'Zapisz',check:'Sprawdź',photo:'Zdjęcie',coll_empty:'Pusto',decks_label:'Talie',intro:'Słowa i pisanie po niemiecku.',modes_label:'Tryby',due_short:'do powtórki'},
+tr:{streak_goal:'Seri · hedef',drop_hint:'Dokun veya bırak',sync_group:'🔄 Grup',capture_intro:'Kelimelerin fotoğrafı.',paste_intro:'Liste yapıştır',review_intro:'Alanları kontrol et',write_intro:'Konu ve metin',parse:'Ayıkla',save:'Kaydet',check:'Kontrol',photo:'Foto',coll_empty:'Boş',decks_label:'Desteler',intro:'Almanca kelimeler ve yazma.',modes_label:'Modlar',due_short:'tekrar'},
+zh:{streak_goal:'连续 · 目标',drop_hint:'点击或拖放',sync_group:'🔄 小组',capture_intro:'拍摄单词列表。',paste_intro:'粘贴词表',review_intro:'检查字段',write_intro:'主题与正文',parse:'解析',save:'保存',check:'检查',photo:'照片',coll_empty:'暂无',decks_label:'牌组',intro:'德语单词与写作。',modes_label:'模式',due_short:'待复习'},
+ja:{streak_goal:'連続 · 目標',drop_hint:'タップまたはドロップ',sync_group:'🔄 グループ',capture_intro:'単語を撮影。',paste_intro:'リストを貼付',review_intro:'項目を確認',write_intro:'テーマと本文',parse:'解析',save:'保存',check:'確認',photo:'写真',coll_empty:'なし',decks_label:'デッキ',intro:'ドイツ語の単語と作文。',modes_label:'モード',due_short:'復習'},
+ar:{streak_goal:'سلسلة · هدف',drop_hint:'انقر أو أفلت',sync_group:'🔄 مجموعة',capture_intro:'صوّر كلماتك.',paste_intro:'الصق قائمة',review_intro:'راجع الحقول',write_intro:'موضوع ونص',parse:'تحليل',save:'حفظ',check:'تحقق',photo:'صورة',coll_empty:'فارغ',decks_label:'مجموعات',intro:'كلمات وكتابة بالألمانية.',modes_label:'الأوضاع',due_short:'للمراجعة'},
+pt:{streak_goal:'Sequência · meta',drop_hint:'Toque ou solte',sync_group:'🔄 Grupo',capture_intro:'Foto das palavras.',paste_intro:'Cole uma lista',review_intro:'Confira os campos',write_intro:'Tema e texto',parse:'Analisar',save:'Salvar',check:'Verificar',photo:'Foto',coll_empty:'Vazio',decks_label:'Baralhos',intro:'Palavras e escrita em alemão.',modes_label:'Modos',due_short:'revisar'},
+it:{streak_goal:'Serie · obiettivo',drop_hint:'Tocca o rilascia',sync_group:'🔄 Gruppo',capture_intro:'Foto delle parole.',paste_intro:'Incolla un elenco',review_intro:'Controlla i campi',write_intro:'Tema e testo',parse:'Analizza',save:'Salva',check:'Controlla',photo:'Foto',coll_empty:'Vuoto',decks_label:'Mazzi',intro:'Parole e scrittura in tedesco.',modes_label:'Modalità',due_short:'da ripassare'},
+ko:{streak_goal:'연속 · 목표',drop_hint:'탭 또는 드롭',sync_group:'🔄 그룹',capture_intro:'단어 사진 찍기.',paste_intro:'목록 붙여넣기',review_intro:'필드 확인',write_intro:'주제와 본문',parse:'분석',save:'저장',check:'확인',photo:'사진',coll_empty:'비어 있음',decks_label:'덱',intro:'독일어 단어와 쓰기.',modes_label:'모드',due_short:'복습'},
+vi:{streak_goal:'Chuỗi · mục tiêu',drop_hint:'Chạm hoặc thả',sync_group:'🔄 Nhóm',capture_intro:'Chụp danh sách từ.',paste_intro:'Dán danh sách',review_intro:'Kiểm tra các mục',write_intro:'Chủ đề và văn bản',parse:'Phân tích',save:'Lưu',check:'Kiểm tra',photo:'Ảnh',coll_empty:'Trống',decks_label:'Bộ thẻ',intro:'Từ và viết tiếng Đức.',modes_label:'Chế độ',due_short:'ôn tập'}
+};
+
 function t(key){
   if(key==null||key==='')return '';
   const lang=(typeof uiLang!=='undefined'&&uiLang)||'ru';
   const pack=(typeof UI!=='undefined'&&(UI[lang]||UI.en||UI.ru))||{};
   if(pack[key]!=null&&pack[key]!=='')return pack[key];
+  if(typeof EXTRA_I18N!=='undefined'){
+    const E=EXTRA_I18N[lang]||EXTRA_I18N.en||{};
+    if(E[key]!=null&&E[key]!=='')return E[key];
+  }
   if(typeof UI!=='undefined'){
     if(UI.en&&UI.en[key]!=null&&UI.en[key]!=='')return UI.en[key];
     if(UI.ru&&UI.ru[key]!=null&&UI.ru[key]!=='')return UI.ru[key];
@@ -5593,66 +5666,51 @@ function tIntro(){
   return t('intro')||t('app_tagline')||'German words & writing.';
 }
 function applyI18n(){
-  const set=(id,key)=>{const el=document.getElementById(id);if(el&&key)el.textContent=t(key)};
-  const setHTML=(id,key)=>{const el=document.getElementById(id);if(el&&key)el.innerHTML=t(key)};
-  const setPH=(id,key)=>{const el=document.getElementById(id);if(el&&key)el.placeholder=t(key)};
-  try{
-    document.documentElement.style.setProperty('--decks-label','"'+t('decks_label')+'"');
-  }catch(e){}
-  // chrome
-  set('topTitle', document.getElementById('screen-home')?.classList.contains('active') ? 'app_name' : null);
+  const set=(id,key)=>{const el=document.getElementById(id);if(el&&key){const v=t(key);if(v&&v!==key)el.textContent=v}};
+  const setPH=(id,key)=>{const el=document.getElementById(id);if(el&&key){const v=t(key);if(v)el.placeholder=v}};
+  const setTitle=(id,key)=>{const el=document.getElementById(id);if(el&&key){const v=t(key);if(v)el.title=v}};
+  try{document.documentElement.style.setProperty('--decks-label','"'+t('decks_label')+'"')}catch(e){}
   set('introText','intro');
   set('helpLine','help_home');
-  // home daily plan
   set('dailyPlanTitle','daily_plan');
-  const go=document.getElementById('dailyPlanGo'); if(go) go.textContent=t('start')||t('lesson')||'Start';
-  // capture / paste
+  const go=document.getElementById('dailyPlanGo');if(go)go.textContent=t('start')||'Start';
   set('captureIntro','capture_intro');
   set('pasteIntro','paste_intro');
   set('pasteOnboard','onboard_paste');
   set('btnParse','parse');
   set('btnSaveReview','save');
   set('reviewIntro','review_intro');
-  // study
-  set('flashBtnLabel','flash');
-  // write
   set('writeIntro','write_intro');
   set('checkWriteBtn','check');
   set('saveWriteBtn','save');
-  // settings
   set('settingsIntro','settings');
   set('langTitle','lang_title');
-  // collection
   set('collIntro','tile_collection');
   set('boosterTitle','booster_title');
   set('boosterSub','booster_sub');
   set('collEmpty','coll_empty');
-  // course
   set('courseIntro','tile_course');
-  set('courseLearnBtn','course_learn');
-  // install
   set('installTitle','install_title');
   set('installBtn','install');
+  set('streakLabel','streak_goal');
+  set('pickPhotoBtn','photo');
+  set('dropHint','drop_hint');
+  set('syncGroupBtn','sync_group');
   // placeholders
   setPH('writeArea','placeholder_write');
   setPH('writeDraft','placeholder_draft');
   setPH('cardSearch','placeholder_search');
   setPH('pasteArea','placeholder_paste');
-  // due button
+  // due toggle
   const dob=document.getElementById('dueOnlyBtn');
-  if(dob){
-    const dueOnly=typeof studyDueOnly!=='undefined'?studyDueOnly:true;
-    dob.textContent=dueOnly?(t('due_on')||'Due'):(t('due_off')||'All');
-  }
-  // grammar mode buttons
+  if(dob){const dueOnly=typeof studyDueOnly!=='undefined'?studyDueOnly:true;dob.textContent=dueOnly?(t('due_on')||'Due'):(t('due_off')||'All')}
+  // grammar
   const gLabels={cases:t('gram_cases'),kasus:t('gram_kasus'),perfekt:t('gram_perfekt'),nebensatz:t('gram_nebesatz'),passiv:t('gram_passiv'),konjunktiv:t('gram_konj'),relativ:t('gram_rel')};
-  document.querySelectorAll('[data-gmode]').forEach(b=>{
-    if(gLabels[b.dataset.gmode])b.textContent=gLabels[b.dataset.gmode];
-  });
-  // language list labels from LANGS
+  document.querySelectorAll('[data-gmode]').forEach(b=>{if(gLabels[b.dataset.gmode])b.textContent=gLabels[b.dataset.gmode]});
   try{updateDirBtn()}catch(e){}
-  // rebuild home tiles text if present
   try{if(document.getElementById('homeGrid'))buildHomeGrid()}catch(e){}
+  try{renderStudyTips()}catch(e){}
+  const _ml=document.getElementById('modesLabel');if(_ml)_ml.textContent=(typeof tip==='function'?tip('modes'):'')||t('modes_label')||'Modes';
 }
 
 
@@ -5724,9 +5782,15 @@ _idbReady=new Promise((resolve,reject)=>{
   const req=indexedDB.open(IDB_NAME,IDB_VER);
   req.onupgradeneeded=(ev)=>{
     const db=req.result;
+    // NEVER delete object stores or clear data on version bump — progress must survive app updates
     if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');
-    // v2: flag schema for future fields; data stays in kv values
-    try{const tx=ev.target.transaction;const store=tx.objectStore('kv');store.put({schema:2,migratedAt:Date.now()},'__meta_schema')}catch(e){}
+    try{
+      const tx=ev.target.transaction;
+      const store=tx.objectStore('kv');
+      // only write meta if missing — do not overwrite user keys
+      const g=store.get('__meta_schema');
+      g.onsuccess=()=>{if(g.result==null)store.put({schema:IDB_VER,migratedAt:Date.now()},'__meta_schema')};
+    }catch(e){}
   };
   req.onsuccess=()=>{_idb=req.result;resolve(_idb)};
   req.onerror=()=>resolve(null);
@@ -8753,6 +8817,46 @@ async function countDueCards(){
   }
   return n;
 }
+
+const STUDY_TIPS={
+ru:{title:'Как учиться',modes:'Режимы',due:'к повторению',
+ flow_h:'Порядок дня',flow_1:'Сначала «Сегодня» → модуль курса или повторение (due).',flow_2:'Потом свои колоды. Режимы — когда есть силы.',flow_3:'Закрывай модуль: слова + речь (🎤).',
+ mod_h:'Модули курса — для чего',a1:'приветствие, еда, семья — база и артикли',a2:'день, город, Perfekt — повседневная речь',b1:'мнение, работа, поездки — аргументы',b2:'общество, экология, стиль — Passiv, Konjunktiv',
+ modes_h:'Режимы приложения',m_flash:'Карточки / due — память (SRS).',m_speak:'Курс → Говори / Shadow — вслух (HTTPS).',m_write:'Письмо — LanguageTool + offline.',m_gram:'Грамматика из твоих слов.',
+ day_h:'Сколько в день',day_1:'15–25 мин: due + 1 модуль. Письмо 2–3×/неделю.'},
+en:{title:'How to study',modes:'Modes',due:'due',
+ flow_h:'Daily flow',flow_1:'Start with Today → course module or due reviews.',flow_2:'Then your decks. Modes when you have energy.',flow_3:'Finish a module: words + speaking (🎤).',
+ mod_h:'Course modules — what for',a1:'greetings, food, family — basics & articles',a2:'routine, city, Perfekt — everyday speech',b1:'opinion, work, travel — arguments',b2:'society, environment, formal style',
+ modes_h:'App modes',m_flash:'Cards / due — spaced repetition.',m_speak:'Course → Speak / Shadow — out loud (HTTPS).',m_write:'Writing — LanguageTool + offline hints.',m_gram:'Grammar from your words.',
+ day_h:'How much per day',day_1:'15–25 min: due + 1 module. Writing 2–3×/week.'},
+de:{title:'So lernst du',modes:'Modi',due:'fällig',
+ flow_h:'Tagesablauf',flow_1:'Zuerst «Heute» → Kursmodul oder fällige Karten.',flow_2:'Dann eigene Decks. Modi bei Energie.',flow_3:'Modul abschließen: Wörter + Sprechen (🎤).',
+ mod_h:'Kursmodule — wozu',a1:'Begrüßung, Essen, Familie — Basis & Artikel',a2:'Alltag, Stadt, Perfekt',b1:'Meinung, Arbeit, Reisen — Argumente',b2:'Gesellschaft, Umwelt, formell',
+ modes_h:'App-Modi',m_flash:'Karten / fällig — SRS.',m_speak:'Kurs → Sprechen / Shadow (HTTPS).',m_write:'Schreiben — LanguageTool + Offline.',m_gram:'Grammatik aus deinen Wörtern.',
+ day_h:'Wie viel pro Tag',day_1:'15–25 Min: fällig + 1 Modul. Schreiben 2–3×/Woche.'},
+uk:{title:'Як вчитися',modes:'Режими',due:'до повторення',
+ flow_h:'Порядок дня',flow_1:'Спочатку «Сьогодні» → модуль або повторення.',flow_2:'Потім свої колоди. Режими — коли є сили.',flow_3:'Закривай модуль: слова + мовлення (🎤).',
+ mod_h:'Модулі курсу',a1:'вітання, їжа, сім’я — база й артиклі',a2:'день, місто, Perfekt',b1:'думка, робота, подорожі',b2:'суспільство, екологія, стиль',
+ modes_h:'Режими застосунку',m_flash:'Картки / due — SRS.',m_speak:'Курс → Говори / Shadow (HTTPS).',m_write:'Письмо — LanguageTool + офлайн.',m_gram:'Граматика з твоїх слів.',
+ day_h:'Скільки на день',day_1:'15–25 хв: due + 1 модуль. Письмо 2–3×/тиждень.'},
+es:{title:'Cómo estudiar',modes:'Modos',due:'repaso',flow_h:'Rutina',flow_1:'Empieza por Hoy → módulo o repasos.',flow_2:'Luego tus mazos.',flow_3:'Cierra el módulo: palabras + hablar (🎤).',mod_h:'Módulos',a1:'saludos, comida, familia',a2:'rutina, ciudad, Perfekt',b1:'opinión, trabajo, viajes',b2:'sociedad, medio ambiente, formal',modes_h:'Modos',m_flash:'Tarjetas / SRS.',m_speak:'Curso → Hablar (HTTPS).',m_write:'Escritura — LanguageTool.',m_gram:'Gramática con tus palabras.',day_h:'Al día',day_1:'15–25 min: repaso + 1 módulo. Escritura 2–3×/semana.'},
+fr:{title:'Comment étudier',modes:'Modes',due:'à revoir',flow_h:'Routine',flow_1:'Commence par Aujourd’hui → module ou révisions.',flow_2:'Puis tes paquets.',flow_3:'Termine le module : mots + oral (🎤).',mod_h:'Modules',a1:'salutations, repas, famille',a2:'quotidien, ville, Perfekt',b1:'avis, travail, voyages',b2:'société, écologie, formel',modes_h:'Modes',m_flash:'Cartes / SRS.',m_speak:'Cours → Parler (HTTPS).',m_write:'Écriture — LanguageTool.',m_gram:'Grammaire avec tes mots.',day_h:'Par jour',day_1:'15–25 min : révisions + 1 module. Écriture 2–3×/semaine.'},
+pl:{title:'Jak się uczyć',modes:'Tryby',due:'do powtórki',flow_h:'Plan dnia',flow_1:'Najpierw «Dziś» → moduł lub powtórki.',flow_2:'Potem swoje talie.',flow_3:'Zamknij moduł: słowa + mówienie (🎤).',mod_h:'Moduły',a1:'powitania, jedzenie, rodzina',a2:'dzień, miasto, Perfekt',b1:'opinia, praca, podróże',b2:'społeczeństwo, ekologia, formalny',modes_h:'Tryby',m_flash:'Karty / SRS.',m_speak:'Kurs → Mów (HTTPS).',m_write:'Pisanie — LanguageTool.',m_gram:'Gramatyka z twoich słów.',day_h:'Dziennie',day_1:'15–25 min: powtórki + 1 moduł. Pisanie 2–3×/tydzień.'},
+tr:{title:'Nasıl çalışmalı',modes:'Modlar',due:'tekrar',flow_h:'Günlük akış',flow_1:'Önce «Bugün» → modül veya tekrarlar.',flow_2:'Sonra kendi destelerin.',flow_3:'Modülü bitir: kelimeler + konuşma (🎤).',mod_h:'Modüller',a1:'selam, yemek, aile',a2:'rutin, şehir, Perfekt',b1:'görüş, iş, seyahat',b2:'toplum, çevre, resmi',modes_h:'Modlar',m_flash:'Kartlar / SRS.',m_speak:'Kurs → Konuş (HTTPS).',m_write:'Yazma — LanguageTool.',m_gram:'Dilbilgisi kendi kelimelerinden.',day_h:'Günde',day_1:'15–25 dk: tekrar + 1 modül. Yazma 2–3×/hafta.'},
+zh:{title:'如何学习',modes:'模式',due:'待复习',flow_h:'每日流程',flow_1:'先看「今天」→ 课程或复习。',flow_2:'然后自己的牌组。',flow_3:'完成模块：单词 + 口语 (🎤)。',mod_h:'课程模块',a1:'问候、饮食、家庭',a2:'作息、城市、Perfekt',b1:'观点、工作、旅行',b2:'社会、环境、正式语体',modes_h:'模式',m_flash:'卡片 / 间隔重复。',m_speak:'课程 → 口语 (HTTPS)。',m_write:'写作 — LanguageTool。',m_gram:'用你的词练语法。',day_h:'每天',day_1:'15–25 分钟：复习 + 1 模块。写作每周 2–3 次。'},
+ja:{title:'学び方',modes:'モード',due:'復習',flow_h:'一日の流れ',flow_1:'まず「今日」→ コースか復習。',flow_2:'次に自分のデッキ。',flow_3:'モジュール完了：単語＋スピーキング (🎤)。',mod_h:'コース',a1:'あいさつ・食事・家族',a2:'日常・街・Perfekt',b1:'意見・仕事・旅行',b2:'社会・環境・フォーマル',modes_h:'モード',m_flash:'カード / 間隔反復。',m_speak:'コース → 話す (HTTPS)。',m_write:'作文 — LanguageTool。',m_gram:'自分の語で文法。',day_h:'1日の目安',day_1:'15–25分：復習＋1モジュール。作文は週2–3回。'},
+ar:{title:'كيف تدرس',modes:'الأوضاع',due:'للمراجعة',flow_h:'روتين اليوم',flow_1:'ابدأ بـ «اليوم» → وحدة أو مراجعات.',flow_2:'ثم مجموعاتك.',flow_3:'أكمل الوحدة: كلمات + تحدث (🎤).',mod_h:'الوحدات',a1:'تحية، طعام، عائلة',a2:'روتين، مدينة، Perfekt',b1:'رأي، عمل، سفر',b2:'مجتمع، بيئة، رسمي',modes_h:'الأوضاع',m_flash:'بطاقات / SRS.',m_speak:'دورة → تحدث (HTTPS).',m_write:'كتابة — LanguageTool.',m_gram:'قواعد من كلماتك.',day_h:'يومياً',day_1:'15–25 دقيقة: مراجعة + وحدة. الكتابة 2–3×/أسبوع.'},
+pt:{title:'Como estudar',modes:'Modos',due:'revisar',flow_h:'Rotina',flow_1:'Comece por Hoje → módulo ou revisões.',flow_2:'Depois seus baralhos.',flow_3:'Feche o módulo: palavras + fala (🎤).',mod_h:'Módulos',a1:'saudações, comida, família',a2:'rotina, cidade, Perfekt',b1:'opinião, trabalho, viagens',b2:'sociedade, ambiente, formal',modes_h:'Modos',m_flash:'Cartas / SRS.',m_speak:'Curso → Falar (HTTPS).',m_write:'Escrita — LanguageTool.',m_gram:'Gramática com suas palavras.',day_h:'Por dia',day_1:'15–25 min: revisão + 1 módulo. Escrita 2–3×/semana.'},
+it:{title:'Come studiare',modes:'Modalità',due:'da ripassare',flow_h:'Routine',flow_1:'Inizia da Oggi → modulo o ripassi.',flow_2:'Poi i tuoi mazzi.',flow_3:'Chiudi il modulo: parole + parlato (🎤).',mod_h:'Moduli',a1:'saluti, cibo, famiglia',a2:'routine, città, Perfekt',b1:'opinione, lavoro, viaggi',b2:'società, ambiente, formale',modes_h:'Modalità',m_flash:'Carte / SRS.',m_speak:'Corso → Parla (HTTPS).',m_write:'Scrittura — LanguageTool.',m_gram:'Grammatica con le tue parole.',day_h:'Al giorno',day_1:'15–25 min: ripasso + 1 modulo. Scrittura 2–3×/settimana.'},
+ko:{title:'학습 방법',modes:'모드',due:'복습',flow_h:'하루 흐름',flow_1:'먼저 「오늘」→ 코스 또는 복습.',flow_2:'그다음 내 덱.',flow_3:'모듈 완료: 단어 + 말하기 (🎤).',mod_h:'코스 모듈',a1:'인사·음식·가족',a2:'일과·도시·Perfekt',b1:'의견·일·여행',b2:'사회·환경·격식체',modes_h:'모드',m_flash:'카드 / 간격 반복.',m_speak:'코스 → 말하기 (HTTPS).',m_write:'쓰기 — LanguageTool.',m_gram:'내 단어로 문법.',day_h:'하루 분량',day_1:'15–25분: 복습 + 모듈 1개. 쓰기는 주 2–3회.'},
+vi:{title:'Cách học',modes:'Chế độ',due:'ôn tập',flow_h:'Nhịp ngày',flow_1:'Bắt đầu với Hôm nay → module hoặc ôn due.',flow_2:'Rồi bộ thẻ của bạn.',flow_3:'Hoàn module: từ + nói (🎤).',mod_h:'Module khóa học',a1:'chào hỏi, đồ ăn, gia đình',a2:'ngày thường, thành phố, Perfekt',b1:'ý kiến, công việc, du lịch',b2:'xã hội, môi trường, trang trọng',modes_h:'Chế độ',m_flash:'Thẻ / SRS.',m_speak:'Khóa → Nói (HTTPS).',m_write:'Viết — LanguageTool.',m_gram:'Ngữ pháp từ từ của bạn.',day_h:'Mỗi ngày',day_1:'15–25 phút: due + 1 module. Viết 2–3 lần/tuần.'}
+};
+function tip(k){
+  const lang=(typeof uiLang!=='undefined'&&uiLang)||'ru';
+  const p=STUDY_TIPS[lang]||STUDY_TIPS.en||STUDY_TIPS.ru;
+  return (p&&p[k])||(STUDY_TIPS.en&&STUDY_TIPS.en[k])||'';
+}
+
 async function renderDailyPlan(){
   const body=document.getElementById('dailyPlanBody');
   const box=document.getElementById('dailyPlanBox');
@@ -8762,19 +8866,43 @@ async function renderDailyPlan(){
   const due=await countDueCards();
   const title=document.getElementById('dailyPlanTitle');
   if(title)title.textContent=t('daily_plan')||'Сегодня';
-  let lines=[];
-  if(next)lines.push('📚 '+(t('course_next')||'Модуль')+': <b>'+escapeHtml(next.level+' · '+courseTitle(next))+'</b>');
-  else lines.push('📚 '+(t('course_all_done')||'Курс: все доступные модули закрыты'));
-  lines.push('◎ '+(t('due_cards')||'К повторению')+': <b>'+due+'</b>');
-  body.innerHTML=lines.join('<br>');
   const go=document.getElementById('dailyPlanGo');
+  if(go)go.textContent=t('start')||'Start';
+  let html='';
+  if(next){
+    html+='<span class="today-line">📚 <b>'+escapeHtml(next.level+' · '+courseTitle(next))+'</b></span>';
+  }else{
+    html+='<span class="today-line">📚 '+escapeHtml(t('course_all_done')||'✓')+'</span>';
+  }
+  html+=' <span class="today-sep">·</span> ';
+  html+='<span class="today-line">◎ <b>'+due+'</b> '+(tip('due')||t('due_short')||'due')+'</span>';
+  body.innerHTML=html;
   if(go){
     go.onclick=async()=>{
-      if(next){openCourseModule(next.id);showScreen('course');return}
+      if(next){await openCourseModule(next.id);showScreen('course');return}
       if(due>0){startDailyLesson();return}
       openCourse();
     };
   }
+  try{renderStudyTips()}catch(e){}
+}
+
+function renderStudyTips(){
+  const sum=document.getElementById('studyTipsSummary');
+  const body=document.getElementById('studyTipsBody');
+  if(sum)sum.textContent='💡 '+tip('title');
+  if(!body)return;
+  const ml=document.getElementById('modesLabel');
+  if(ml)ml.textContent=tip('modes');
+  body.innerHTML=
+    '<div class="tip-h">'+tip('flow_h')+'</div>'+
+    '<ul><li>'+tip('flow_1')+'</li><li>'+tip('flow_2')+'</li><li>'+tip('flow_3')+'</li></ul>'+
+    '<div class="tip-h">'+tip('mod_h')+'</div>'+
+    '<ul><li><b>A1</b> — '+tip('a1')+'</li><li><b>A2</b> — '+tip('a2')+'</li><li><b>B1</b> — '+tip('b1')+'</li><li><b>B2</b> — '+tip('b2')+'</li></ul>'+
+    '<div class="tip-h">'+tip('modes_h')+'</div>'+
+    '<ul><li>'+tip('m_flash')+'</li><li>'+tip('m_speak')+'</li><li>'+tip('m_write')+'</li><li>'+tip('m_gram')+'</li></ul>'+
+    '<div class="tip-h">'+tip('day_h')+'</div>'+
+    '<ul><li>'+tip('day_1')+'</li></ul>';
 }
 
 async function flushWriteQueue(){
