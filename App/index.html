@@ -4940,10 +4940,10 @@ document.getElementById('pasteArea').value='';openReview(words)};
 
 let reviewRows=[];
 async function openReview(words){
-const MAX_REVIEW=80;
+const MAX_REVIEW=500;
 let list=words.map(w=>({id:uid(),de:sanitizeField(w.de||'',200),ru:sanitizeField(w.ru||'',200),plural:sanitizeField(w.plural||'',80),tag:sanitizeField(w.tag||'',40),example:sanitizeField(w.example||'',300),note:sanitizeField(w.note||'',300)}));
 if(list.length>MAX_REVIEW){
-  const ok=await showConfirm((t('review_limit_q')||'Слишком много слов ({n}). Показать первые {m}? Остальные не попадут в этот импорт.').replace('{n}',list.length).replace('{m}',MAX_REVIEW));
+  const ok=await showConfirm((t('review_limit_q')||'Много слов ({n}). Показать первые {m} для проверки? Остальные можно добавить следующей вставкой или через JSON.').replace('{n}',list.length).replace('{m}',MAX_REVIEW));
   if(!ok)return;
   list=list.slice(0,MAX_REVIEW);
 }
