@@ -296,6 +296,13 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .deck-lang-bar .chip{font-size:.72rem;padding:.28rem .55rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--ink-soft);font-weight:600}
 .deck-lang-bar .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .deck-lang-bar .meta{font-size:.7rem;color:var(--ink-soft);margin-left:.25rem}
+
+.deck-toolbar{display:flex;flex-wrap:wrap;gap:.4rem;margin:.55rem 0 .75rem}
+.deck-toolbar .btn{flex:1;min-width:100px;font-weight:700}
+.deck-toolbar .btn-add{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.deck-toolbar .btn-danger-outline{border-color:var(--red);color:var(--red)}
+.deck-lock-badge{display:inline-block;font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:999px;border:1px solid var(--border);color:var(--ink-soft);margin-left:.35rem;vertical-align:middle}
+.danger-link{display:none} /* hide old tiny link; use toolbar */
 </style>
 </head>
 <body>
@@ -367,8 +374,13 @@ der Hund – собака | die Hunde | животные</div>
 </section>
 
 <section class="screen" id="screen-deck">
-<div class="deck-header"><h2 id="deckTitle" class="display"></h2></div>
+<div class="deck-header"><h2 id="deckTitle" class="display"></h2><span class="deck-lock-badge hidden" id="deckLockBadge">🔒</span></div>
 <div class="deck-stats" id="deckStats"></div>
+<div class="deck-toolbar" id="deckToolbar">
+<button type="button" class="btn btn-add" id="deckAddBtn">＋ Добавить</button>
+<button type="button" class="btn btn-outline" id="deckExportBtn">⬇ Экспорт</button>
+<button type="button" class="btn btn-outline btn-danger-outline" id="deckDeleteBtn">Удалить колоду</button>
+</div>
 <div class="search-row"><input type="search" id="cardSearch" placeholder="🔍"></div>
 <div class="tag-filter" id="tagFilter"></div>
 <div class="tag-filter" id="typeFilter"></div>
@@ -801,7 +813,7 @@ alert_no_mistakes:'Пока нет слабых карточек — снача�
 },en:{n:'English'},de:{n:'Deutsch'},uk:{n:'Українська'},es:{n:'Español'},fr:{n:'Français'},pl:{n:'Polski'},tr:{n:'Türkçe'},zh:{n:'中文'},ja:{n:'日本語'},ar:{n:'العربية'},pt:{n:'Português'},it:{n:'Italiano'},ko:{n:'한국어'},vi:{n:'Tiếng Việt'}
 };
 const UI={
-ru:{decks_for_lang:'Для',decks_show_all:'Показать все',decks_filter_lang:'Фильтр по языку',empty_decks_lang:'Нет колод для этого языка. «Показать все» или 🔄 Группа.',sync_group:'🔄 Группа',sync_ok:'База группы обновлена',sync_fail:'Не удалось скачать group-base.json. Проверь интернет или хостинг.',sync_none:'Новых карточек нет',hint_letter:'Буква',hint_rule:'Правило',tile_grammar:'Грамматика',hint_grammar:'Падежи, Perfekt, Nebensatz',tile_collection:'Коллекция',hint_collection:'Ранг, паки и идиомы',rank:'Ранг',pack_ready:'Пак доступен!',pack_sub:'Дневная цель закрыта — открой бустер',open_pack:'Открыть пак',coll_empty:'Пока пусто. Закрой цель на день.',coll_title:'Собранные карточки',iron_wins:'Идеальных серий',rarity_common:'Обычная',rarity_rare:'Редкая',rarity_epic:'Эпическая',rarity_legend:'Легенда',lt_429:'LanguageTool лимит (часто общий Wi‑Fi). Подожди 1–2 мин или проверь через LTE.',review_limit_q:'Слишком много слов ({n}). Показать первые {m}? Остальные не попадут в этот импорт.',import_personal_q:'Файл содержит личные данные (настройки, API-ключ, историю). Заменить ваши? Для обмена колодами — Отмена.',you_wrote:'Вы написали',ocr_need_key:'Для фото нужен API-ключ Anthropic в Настройках (бесплатный tier). Или «Вставить текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоды',app_name:'forn',
+ru:{deck_protected:'Групповая',deck_no_delete:'Групповую колоду нельзя удалить — можно править карточки',confirm_delete_deck:'Удалить свою колоду и все её карточки?',import_pick_decks:'В файле несколько колод.\nOK = импортировать ВСЕ\nОтмена = только первую колоду',decks_for_lang:'Для',decks_show_all:'Показать все',decks_filter_lang:'Фильтр по языку',empty_decks_lang:'Нет колод для этого языка. «Показать все» или 🔄 Группа.',sync_group:'🔄 Группа',sync_ok:'База группы обновлена',sync_fail:'Не удалось скачать group-base.json. Проверь интернет или хостинг.',sync_none:'Новых карточек нет',hint_letter:'Буква',hint_rule:'Правило',tile_grammar:'Грамматика',hint_grammar:'Падежи, Perfekt, Nebensatz',tile_collection:'Коллекция',hint_collection:'Ранг, паки и идиомы',rank:'Ранг',pack_ready:'Пак доступен!',pack_sub:'Дневная цель закрыта — открой бустер',open_pack:'Открыть пак',coll_empty:'Пока пусто. Закрой цель на день.',coll_title:'Собранные карточки',iron_wins:'Идеальных серий',rarity_common:'Обычная',rarity_rare:'Редкая',rarity_epic:'Эпическая',rarity_legend:'Легенда',lt_429:'LanguageTool лимит (часто общий Wi‑Fi). Подожди 1–2 мин или проверь через LTE.',review_limit_q:'Слишком много слов ({n}). Показать первые {m}? Остальные не попадут в этот импорт.',import_personal_q:'Файл содержит личные данные (настройки, API-ключ, историю). Заменить ваши? Для обмена колодами — Отмена.',you_wrote:'Вы написали',ocr_need_key:'Для фото нужен API-ключ Anthropic в Настройках (бесплатный tier). Или «Вставить текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоды',app_name:'forn',
 add:'+',
 add_row:'+ строка',
 again:'Ещё',
@@ -1019,7 +1031,7 @@ tile_mistakes:'Ошибки',
 hint_mistakes:'Повтор карточек с ошибками и низким боксом',
 alert_no_mistakes:'Пока нет слабых карточек — сначала поучись'
 },
-en:{decks_for_lang:'For',decks_show_all:'Show all',decks_filter_lang:'Filter by language',empty_decks_lang:'No decks for this language. Use “Show all” or Group sync.',sync_group:'🔄 Group',sync_ok:'Group base updated',sync_fail:'Could not fetch group-base.json. Check network/hosting.',sync_none:'No new cards',hint_letter:'Letter',hint_rule:'Rule',tile_grammar:'Grammar',hint_grammar:'Cases, Perfekt, Nebensatz',tile_collection:'Collection',hint_collection:'Rank, packs & idioms',rank:'Rank',pack_ready:'Pack ready!',pack_sub:'Daily goal done — open a booster',open_pack:'Open pack',coll_empty:'Empty. Finish the daily goal.',coll_title:'Collected cards',iron_wins:'Perfect runs',rarity_common:'Common',rarity_rare:'Rare',rarity_epic:'Epic',rarity_legend:'Legend',lt_429:'LanguageTool rate limit (common on shared Wi‑Fi). Wait 1–2 min or use mobile data.',review_limit_q:'Too many words ({n}). Show first {m}? The rest will not be imported.',import_personal_q:'File contains personal data (settings, API key, history). Replace yours? For sharing decks — Cancel.',you_wrote:'You wrote',ocr_need_key:'Photo OCR needs an Anthropic API key in Settings (free tier). Or use Paste as text.',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Theme',decks_label:'Decks',app_name:'forn',
+en:{deck_protected:'Group',deck_no_delete:'Group decks can’t be deleted — you can still edit cards',confirm_delete_deck:'Delete your deck and all its cards?',import_pick_decks:'File has several decks.\nOK = import ALL\nCancel = first deck only',decks_for_lang:'For',decks_show_all:'Show all',decks_filter_lang:'Filter by language',empty_decks_lang:'No decks for this language. Use “Show all” or Group sync.',sync_group:'🔄 Group',sync_ok:'Group base updated',sync_fail:'Could not fetch group-base.json. Check network/hosting.',sync_none:'No new cards',hint_letter:'Letter',hint_rule:'Rule',tile_grammar:'Grammar',hint_grammar:'Cases, Perfekt, Nebensatz',tile_collection:'Collection',hint_collection:'Rank, packs & idioms',rank:'Rank',pack_ready:'Pack ready!',pack_sub:'Daily goal done — open a booster',open_pack:'Open pack',coll_empty:'Empty. Finish the daily goal.',coll_title:'Collected cards',iron_wins:'Perfect runs',rarity_common:'Common',rarity_rare:'Rare',rarity_epic:'Epic',rarity_legend:'Legend',lt_429:'LanguageTool rate limit (common on shared Wi‑Fi). Wait 1–2 min or use mobile data.',review_limit_q:'Too many words ({n}). Show first {m}? The rest will not be imported.',import_personal_q:'File contains personal data (settings, API key, history). Replace yours? For sharing decks — Cancel.',you_wrote:'You wrote',ocr_need_key:'Photo OCR needs an Anthropic API key in Settings (free tier). Or use Paste as text.',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Theme',decks_label:'Decks',app_name:'forn',
 add:'+',
 add_row:'+ row',
 again:'Again',
@@ -1237,7 +1249,7 @@ tile_mistakes:'Mistakes',
 hint_mistakes:'Review cards you got wrong or still weak',
 alert_no_mistakes:'No weak cards yet — study a bit first',
 },
-de:{decks_for_lang:'Für',decks_show_all:'Alle anzeigen',decks_filter_lang:'Nach Sprache filtern',empty_decks_lang:'Keine Decks für diese Sprache. „Alle anzeigen“ oder Gruppe-Sync.',sync_group:'🔄 Gruppe',sync_ok:'Gruppenbasis aktualisiert',sync_fail:'group-base.json konnte nicht geladen werden.',sync_none:'Keine neuen Karten',hint_letter:'Buchstabe',hint_rule:'Regel',tile_grammar:'Grammatik',hint_grammar:'Kasus, Perfekt, Nebensatz',tile_collection:'Sammlung',hint_collection:'Rang, Packs & Redewendungen',rank:'Rang',pack_ready:'Pack bereit!',pack_sub:'Tagesziel erreicht — Booster öffnen',open_pack:'Pack öffnen',coll_empty:'Leer. Tagesziel abschließen.',coll_title:'Gesammelte Karten',iron_wins:'Perfekte Läufe',rarity_common:'Gewöhnlich',rarity_rare:'Selten',rarity_epic:'Episch',rarity_legend:'Legende',lt_429:'LanguageTool-Limit (oft im gemeinsamen WLAN). 1–2 Min warten oder Mobilfunk nutzen.',review_limit_q:'Zu viele Wörter ({n}). Erste {m} zeigen? Rest wird nicht importiert.',import_personal_q:'Datei enthält persönliche Daten (Einstellungen, API-Key, Verlauf). Ersetzen? Zum Teilen von Decks — Abbrechen.',you_wrote:'Du hast geschrieben',ocr_need_key:'Foto-OCR braucht einen Anthropic-API-Key in den Einstellungen. Oder Text einfügen.',api_key_label:'Anthropic API-Key (OCR)',theme_toggle:'Design',decks_label:'Stapel',app_name:'forn',
+de:{deck_protected:'Gruppe',deck_no_delete:'Gruppendecks können nicht gelöscht werden — Karten bearbeiten geht',confirm_delete_deck:'Eigenes Deck und alle Karten löschen?',import_pick_decks:'Datei hat mehrere Decks.\nOK = ALLE importieren\nAbbrechen = nur erstes Deck',decks_for_lang:'Für',decks_show_all:'Alle anzeigen',decks_filter_lang:'Nach Sprache filtern',empty_decks_lang:'Keine Decks für diese Sprache. „Alle anzeigen“ oder Gruppe-Sync.',sync_group:'🔄 Gruppe',sync_ok:'Gruppenbasis aktualisiert',sync_fail:'group-base.json konnte nicht geladen werden.',sync_none:'Keine neuen Karten',hint_letter:'Buchstabe',hint_rule:'Regel',tile_grammar:'Grammatik',hint_grammar:'Kasus, Perfekt, Nebensatz',tile_collection:'Sammlung',hint_collection:'Rang, Packs & Redewendungen',rank:'Rang',pack_ready:'Pack bereit!',pack_sub:'Tagesziel erreicht — Booster öffnen',open_pack:'Pack öffnen',coll_empty:'Leer. Tagesziel abschließen.',coll_title:'Gesammelte Karten',iron_wins:'Perfekte Läufe',rarity_common:'Gewöhnlich',rarity_rare:'Selten',rarity_epic:'Episch',rarity_legend:'Legende',lt_429:'LanguageTool-Limit (oft im gemeinsamen WLAN). 1–2 Min warten oder Mobilfunk nutzen.',review_limit_q:'Zu viele Wörter ({n}). Erste {m} zeigen? Rest wird nicht importiert.',import_personal_q:'Datei enthält persönliche Daten (Einstellungen, API-Key, Verlauf). Ersetzen? Zum Teilen von Decks — Abbrechen.',you_wrote:'Du hast geschrieben',ocr_need_key:'Foto-OCR braucht einen Anthropic-API-Key in den Einstellungen. Oder Text einfügen.',api_key_label:'Anthropic API-Key (OCR)',theme_toggle:'Design',decks_label:'Stapel',app_name:'forn',
 add:'+',
 add_row:'+ Zeile',
 again:'Nochmal',
@@ -1455,7 +1467,7 @@ tile_mistakes:'Fehler',
 hint_mistakes:'Karten mit Fehlern und niedrigem Fach wiederholen',
 alert_no_mistakes:'Noch keine schwachen Karten — erst üben',
 },
-uk:{decks_for_lang:'Для',decks_show_all:'Показати всі',decks_filter_lang:'Фільтр за мовою',empty_decks_lang:'Немає колод для цієї мови. «Показати всі» або 🔄 Група.',sync_group:'🔄 Група',sync_ok:'Базу групи оновлено',sync_fail:'Не вдалося завантажити group-base.json.',sync_none:'Нових карток немає',hint_letter:'Літера',hint_rule:'Правило',tile_grammar:'Граматика',hint_grammar:'Відмінки, Perfekt, Nebensatz',tile_collection:'Колекція',hint_collection:'Ранг, паки та ідіоми',rank:'Ранг',pack_ready:'Пак доступний!',pack_sub:'Денну ціль закрито — відкрий бустер',open_pack:'Відкрити пак',coll_empty:'Порожньо. Закрий ціль на день.',coll_title:'Зібрані картки',iron_wins:'Ідеальних серій',rarity_common:'Звичайна',rarity_rare:'Рідкісна',rarity_epic:'Епічна',rarity_legend:'Легенда',lt_429:'Ліміт LanguageTool (часто спільний Wi‑Fi). Зачекай 1–2 хв або LTE.',review_limit_q:'Забагато слів ({n}). Показати перші {m}? Решта не потрапить в імпорт.',import_personal_q:'Файл містить особисті дані (налаштування, API-ключ, історію). Замінити ваші? Для обміну колодами — Скасувати.',you_wrote:'Ви написали',ocr_need_key:'Для фото потрібен API-ключ Anthropic у Налаштуваннях. Або «Вставити текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоди',app_name:'forn',
+uk:{deck_protected:'Групова',deck_no_delete:'Групову колоду не можна видалити — картки можна редагувати',confirm_delete_deck:'Видалити свою колоду та всі картки?',import_pick_decks:'У файлі кілька колод.\nOK = імпортувати ВСІ\nСкасувати = лише першу',decks_for_lang:'Для',decks_show_all:'Показати всі',decks_filter_lang:'Фільтр за мовою',empty_decks_lang:'Немає колод для цієї мови. «Показати всі» або 🔄 Група.',sync_group:'🔄 Група',sync_ok:'Базу групи оновлено',sync_fail:'Не вдалося завантажити group-base.json.',sync_none:'Нових карток немає',hint_letter:'Літера',hint_rule:'Правило',tile_grammar:'Граматика',hint_grammar:'Відмінки, Perfekt, Nebensatz',tile_collection:'Колекція',hint_collection:'Ранг, паки та ідіоми',rank:'Ранг',pack_ready:'Пак доступний!',pack_sub:'Денну ціль закрито — відкрий бустер',open_pack:'Відкрити пак',coll_empty:'Порожньо. Закрий ціль на день.',coll_title:'Зібрані картки',iron_wins:'Ідеальних серій',rarity_common:'Звичайна',rarity_rare:'Рідкісна',rarity_epic:'Епічна',rarity_legend:'Легенда',lt_429:'Ліміт LanguageTool (часто спільний Wi‑Fi). Зачекай 1–2 хв або LTE.',review_limit_q:'Забагато слів ({n}). Показати перші {m}? Решта не потрапить в імпорт.',import_personal_q:'Файл містить особисті дані (налаштування, API-ключ, історію). Замінити ваші? Для обміну колодами — Скасувати.',you_wrote:'Ви написали',ocr_need_key:'Для фото потрібен API-ключ Anthropic у Налаштуваннях. Або «Вставити текстом».',api_key_label:'Anthropic API Key (OCR)',theme_toggle:'Тема',decks_label:'Колоди',app_name:'forn',
 add:'+',
 add_row:'+ рядок',
 again:'Ще',
@@ -4569,9 +4581,9 @@ let addedCards=0,addedDecks=0;
 for(const d of b.decks){
   let deck=decks.find(x=>x.id===d.id||x.name===d.name);
   if(!deck){
-    deck={id:d.id||uid(),name:sanitizeField(d.name||'Group',80),createdAt:d.createdAt||Date.now(),lang:d.lang||detectDeckLang(d)};
+    deck={id:d.id||uid(),name:sanitizeField(d.name||'Group',80),createdAt:d.createdAt||Date.now(),lang:d.lang||detectDeckLang(d),protected:true,source:'group'};
     decks.push(deck);addedDecks++;
-  }
+  }else{deck.protected=true;deck.source='group';if(d.lang)deck.lang=d.lang;}
   const incoming=(b.cardsByDeck&&(b.cardsByDeck[d.id]||b.cardsByDeck[deck.id]))||[];
   const existing=await loadCards(deck.id);
   const seen=new Set(existing.map(c=>(c.de||'')+'|'+(c.ru||'')));
@@ -4622,33 +4634,52 @@ document.getElementById('importFileInput').onchange=async e=>{const file=e.targe
 if(file.name.endsWith('.csv')||text.startsWith('deck,'))await importCsv(text);
 else{
   const b=JSON.parse(text);if(!b.decks||!Array.isArray(b.decks))throw new Error('format');
-  // Always merge decks/cards (share with group)
+  // Pick which decks to import (don't force entire archive)
+  let chosen=b.decks.slice();
+  if(b.decks.length>1){
+    const names=b.decks.map((d,idx)=>((idx+1)+'. '+(d.name||d.id||'Deck'))).join('\\n');
+    const msg=(t('import_pick_decks')||'В файле несколько колод. Импортировать ВСЕ? ОКn• OK = все колоды\\n• Отмена = только первая')+'\\n\\n'+names;
+    const all=await showConfirm(msg);
+    if(!all)chosen=b.decks.slice(0,1);
+  }
   let decks=await loadDecks();
-  let added=0;
-  for(const d of b.decks){
-    if(!decks.find(x=>x.id===d.id)){decks.push({id:d.id,name:sanitizeField(d.name||'Import',80),createdAt:d.createdAt||Date.now()});added++}
-    const incoming=(b.cardsByDeck&&b.cardsByDeck[d.id])||[];
-    const existing=await loadCards(d.id);
-    const seen=new Set(existing.map(c=>(c.de||'')+'|'+(c.ru||'')));
+  let addedCards=0,addedDecks=0;
+  for(const d of chosen){
+    let deck=decks.find(x=>x.id===d.id);
+    if(!deck){
+      // also match by name to avoid duplicates
+      deck=decks.find(x=>x.name===d.name);
+      if(!deck){
+        deck={id:d.id||uid(),name:sanitizeField(d.name||'Import',80),createdAt:d.createdAt||Date.now(),lang:d.lang||detectDeckLang(d),protected:!!(d.protected||d.locked||d.source==='group'),source:d.source||(d.protected?'group':'user')};
+        decks.push(deck);addedDecks++;
+      }
+    }
+    const incoming=(b.cardsByDeck&&(b.cardsByDeck[d.id]||b.cardsByDeck[deck.id]))||[];
+    const existing=await loadCards(deck.id);
+    const seen=new Set(existing.map(c=>cleanLabel(c.de)+'|'+cleanLabel(c.ru)));
     const merged=existing.slice();
     for(const c of incoming){
-      const de=sanitizeField(c.de||'',200),ru=sanitizeField(c.ru||'',200);
+      let de=cleanLabel(sanitizeField(c.de||'',200)),ru=cleanLabel(sanitizeField(c.ru||'',200));
       if(!de||!ru)continue;
       if(seen.has(de+'|'+ru))continue;
       seen.add(de+'|'+ru);
-      merged.push({...c,id:c.id||uid(),de,ru,
+      const conj=c.conj||emptyConj();
+      if(typeof conj==='object'){
+        ['ich','du','er','wir','ihr','sie','part'].forEach(k=>{if(conj[k])conj[k]=sanitizeField(conj[k],40)});
+      }
+      merged.push({id:c.id||uid(),de,ru,
         plural:sanitizeField(c.plural||'',80),tag:sanitizeField(c.tag||'',40),
         example:sanitizeField(c.example||'',300),note:sanitizeField(c.note||'',300),
         type:sanitizeField(c.type||'',12),
-        conj:c.conj||emptyConj(),box:c.box||1,ease:c.ease||2.5,interval:c.interval||0,reps:c.reps||0,lapses:c.lapses||0,due:c.due||null});
+        conj:conj,box:c.box||1,ease:c.ease||2.5,interval:c.interval||0,reps:c.reps||0,lapses:c.lapses||0,due:c.due||null});
+      addedCards++;
     }
-    await saveCards(d.id,merged);
+    await saveCards(deck.id,merged);
   }
   await saveDecks(decks);
-  // Personal data: only on explicit confirm (API key, streak, write history)
   const hasPersonal=!!(b.settings||b.writeHistory||b.errorBank||b.stats||b.studyStats);
   if(hasPersonal){
-    const ok=await showConfirm(t('import_personal_q')||'Файл содержит личные данные (настройки, API-ключ, историю, статистику). Заменить ваши на данные из файла? Обычно для обмена колодами жмите «Отмена».',{destructive:true});
+    const ok=await showConfirm(t('import_personal_q')||'Файл содержит личные данные. Заменить ваши? Для обмена колодами — Отмена.',{destructive:true});
     if(ok){
       if(b.settings){await saveSettings(b.settings);settings=await loadSettings();uiLang=settings.uiLang||uiLang;await applyTheme()}
       if(b.writeHistory)await saveWriteHistory(b.writeHistory);
@@ -4656,8 +4687,29 @@ else{
       if(b.stats||b.studyStats)await saveStats(b.stats||b.studyStats);
     }
   }
+  showToast((t('alert_saved')||'OK')+' · +'+addedCards+' ('+addedDecks+' '+((t('decks_label')||'decks'))+')','ok');
+  // skip default toast below for this branch — use flag
+  window._importDidToast=true;
+if(!window._importDidToast)showToast(t('alert_saved')+' ✓','ok');window._importDidToast=false;renderHome();}catch(err){showToast(err.message||String(err),'err')}e.target.value=''};
+
+function cleanLabel(s,max){
+s=String(s||'').replace(/\s+/g,' ').trim();
+s=s.split('\n')[0].trim();
+s=s.replace(/[,;，、]+$/g,'').trim();
+s=s.replace(/\s+[-–—]\s*$/,'');
+if(max&&s.length>max)s=s.slice(0,max).trim();
+return s;
 }
-showToast(t('alert_saved')+' ✓','ok');renderHome();}catch(err){showToast(err.message||String(err),'err')}e.target.value=''};
+function isPlayableCard(c){
+const de=cleanLabel(c&&c.de,60), ru=cleanLabel(c&&c.ru,60);
+if(!de||!ru)return false;
+if(de.length<2||ru.length<2)return false;
+return true;
+}
+function primarySide(c,side){
+return cleanLabel(c&&c[side],80);
+}
+
 function sanitizeField(s,max){let str=String(s||'');str=str.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');if(str.length>(max||500))str=str.slice(0,max||500);if(str.indexOf('<')!==-1||str.indexOf('>')!==-1){const d=document.createElement('div');d.textContent=str;str=d.textContent}return str}
 async function importCsv(text){
 const lines=text.split(/\r?\n/).filter(Boolean);const header=lines[0].toLowerCase();const rows=header.includes('de')?lines.slice(1):lines;
@@ -4821,7 +4873,7 @@ else if(!decks.length)row.innerHTML='<div class="empty-box">'+(t('empty_decks_la
 else for(const d of decks){const cards=await loadCards(d.id);const m=cards.filter(c=>(c.box||1)>=4).length;const r=cards.length?m/cards.length:0;
 const el=document.createElement('div');el.className='deck-tab';el.style.borderLeftColor=r>0.66?'var(--sage)':r>0.33?'var(--gold)':'var(--red)';
 const tag=detectDeckLang(d);const tagLab=tag==='all'?'':(' · '+tag.toUpperCase());
-el.innerHTML='<div class="name">'+escapeHtml(d.name)+'<span>'+cards.length+' · '+m+tagLab+'</span></div><div class="count">'+cards.length+'</div>';
+const lock=isDeckProtected(d)?' 🔒':'';el.innerHTML='<div class="name">'+escapeHtml(d.name)+lock+'<span>'+cards.length+' · '+m+tagLab+'</span></div><div class="count">'+cards.length+'</div>';
 el.onclick=()=>openDeck(d.id);row.appendChild(el)}
 const st=await loadStats();document.getElementById('streakNum').textContent=st.streak||0;
 const tc=st.days[todayStr()]||0;const goal=settings.dailyGoal||30;
@@ -4893,19 +4945,30 @@ if(list.length>MAX_REVIEW){
 }
 reviewRows=list;await populateDeckSelect();if(prefilledDeckId)document.getElementById('deckSelect').value=prefilledDeckId;renderReviewList();showScreen('review')}
 function renderReviewList(){const list=document.getElementById('reviewList');const frag=document.createDocumentFragment();
-reviewRows.forEach(row=>{const el=document.createElement('div');el.className='review-row';
+reviewRows.forEach(row=>{
+if(!row.conj)row.conj={ich:'',du:'',er:'',wir:'',ihr:'',sie:'',part:''};
+const el=document.createElement('div');el.className='review-row';el.style.flexWrap='wrap';
 const mk=(lab,f,mw)=>{const col=document.createElement('div');col.className='col';if(mw)col.style.maxWidth=mw;const l=document.createElement('label');l.textContent=lab;const inp=document.createElement('input');inp.dataset.f=f;inp.value=row[f]||'';inp.oninput=()=>{row[f]=inp.value};col.appendChild(l);col.appendChild(inp);return col};
 el.appendChild(mk('DE','de'));el.appendChild(mk('TR','ru'));el.appendChild(mk('Pl','plural','70px'));el.appendChild(mk('Tag','tag','60px'));
 const del=document.createElement('button');del.type='button';del.className='row-del';del.textContent='✕';
 del.onclick=()=>{reviewRows=reviewRows.filter(r=>r.id!==row.id);renderReviewList()};
-el.appendChild(del);frag.appendChild(el)});
+el.appendChild(del);
+// conjugation row
+const cg=document.createElement('div');cg.className='conj-grid';cg.style.width='100%';cg.style.marginTop='.35rem';
+['ich','du','er','wir','ihr','sie','part'].forEach(k=>{
+  const inp=document.createElement('input');inp.placeholder=k;inp.value=(row.conj&&row.conj[k])||'';
+  inp.oninput=()=>{row.conj=row.conj||{};row.conj[k]=inp.value};
+  cg.appendChild(inp);
+});
+el.appendChild(cg);
+frag.appendChild(el)});
 list.replaceChildren(frag)}
 document.getElementById('addRowBtn').onclick=()=>{reviewRows.push({id:uid(),de:'',ru:'',plural:'',tag:'',example:'',note:''});renderReviewList()};
 function syncDeckNameField(){const sel=document.getElementById('deckSelect');const inp=document.getElementById('newDeckName');if(!sel||!inp)return;const isNew=sel.value==='__new__';inp.classList.toggle('hidden',!isNew);if(isNew)inp.placeholder=(typeof t==='function'&&t('deck_new'))||'New deck'}
 async function populateDeckSelect(){const decks=filterDecksForUi(await loadDecks());const sel=document.getElementById('deckSelect');const lab=(typeof t==='function'?t('deck_new'):'New deck');sel.innerHTML='<option value="__new__">+ '+lab+'</option>'+decks.map(d=>'<option value="'+d.id+'">'+escapeAttr(d.name)+'</option>').join('');if(!decks.length)sel.value='__new__';sel.onchange=syncDeckNameField;syncDeckNameField()}
 document.getElementById('saveReviewBtn').onclick=async()=>{const rows=reviewRows.filter(r=>r.de.trim()&&r.ru.trim());if(!rows.length)return;const sel=document.getElementById('deckSelect');let decks=await loadDecks();let deckId;
 if(sel.value==='__new__'){const name=document.getElementById('newDeckName').value.trim();if(!name){document.getElementById('newDeckName').classList.remove('hidden');document.getElementById('newDeckName').focus();alert((typeof t==='function'?t('deck_new'):'Name')+'!');return}deckId=uid();decks.push({id:deckId,name,createdAt:Date.now(),lang:uiLang||''});await saveDecks(decks)}else deckId=sel.value;
-const cards=await loadCards(deckId);rows.forEach(r=>cards.push({id:uid(),de:r.de.trim(),ru:r.ru.trim(),plural:(r.plural||'').trim(),tag:(r.tag||'').trim(),example:(r.example||'').trim(),note:(r.note||'').trim(),type:'',conj:emptyConj(),...newCardFields()}));
+const cards=await loadCards(deckId);rows.forEach(r=>{const cj=r.conj||emptyConj();const hasConj=Object.values(cj).some(v=>String(v||'').trim());cards.push({id:uid(),de:cleanLabel(r.de),ru:cleanLabel(r.ru),plural:(r.plural||'').trim(),tag:(r.tag||'').trim(),example:(r.example||'').trim(),note:(r.note||'').trim(),type:hasConj?'V':'',conj:hasConj?{ich:cj.ich||'',du:cj.du||'',er:cj.er||'',wir:cj.wir||'',ihr:cj.ihr||'',sie:cj.sie||'',part:cj.part||''}:emptyConj(),...newCardFields()})});
 await saveCards(deckId,cards);prefilledDeckId=deckId;await openDeck(deckId)};
 
 /* DECK */
@@ -4913,9 +4976,28 @@ let currentDeckId=null,studyDirection='de-ru',onlyHard=false,onlyLeech=false,fil
 let studyQueue=[],studyIndex=0,studyDeckId=null,studyMode='flash',studyResults={yes:0,no:0,hard:0};
 let typeAnswered=false,clozeAnswered=false,sentAnswered=false,conjAnswered=false,undoStack=null,sessionStart=0,timerInterval=null;
 
+
+function isDeckProtected(deck){
+if(!deck)return false;
+if(deck.protected===true||deck.locked===true||deck.readonly===true)return true;
+if(deck.source==='group'||deck.source==='official')return true;
+return false;
+}
+async function getCurrentDeck(){
+const decks=await loadDecks();
+return decks.find(d=>d.id===currentDeckId);
+}
+
 async function openDeck(deckId,push=true){currentDeckId=deckId;onlyHard=false;onlyLeech=false;filterTag='';filterType='';batchMode=false;selectedIds.clear();document.getElementById('batchBar').classList.remove('show');if(!push){navStack=navStack.filter(s=>s!=='edit');if(navStack[navStack.length-1]!=='deck'){navStack=['home','deck']}}
 const decks=await loadDecks();const deck=decks.find(d=>d.id===deckId);if(!deck){showScreen('home',false);renderHome();return}
-document.getElementById('deckTitle').textContent=deck.name;const cards=await loadCards(deckId);
+document.getElementById('deckTitle').textContent=deck.name;
+const prot=isDeckProtected(deck);
+const badge=document.getElementById('deckLockBadge');
+if(badge){badge.classList.toggle('hidden',!prot);badge.textContent=prot?('🔒 '+(t('deck_protected')||'Групповая')):''}
+const delBtn=document.getElementById('deckDeleteBtn')||document.getElementById('deleteDeckBtn');
+if(delBtn){delBtn.style.display=prot?'none':'';delBtn.disabled=!!prot}
+const oldDel=document.getElementById('deleteDeckBtn');if(oldDel&&oldDel!==delBtn)oldDel.style.display='none';
+const cards=await loadCards(deckId);
 document.getElementById('deckStats').innerHTML='<div class="stat-pill">'+cards.length+'</div><div class="stat-pill">✓ '+cards.filter(c=>(c.box||1)>=4).length+'</div><div class="stat-pill">V '+cards.filter(c=>c.type==='V').length+'</div>';
 document.getElementById('cardSearch').value='';updateDirBtn();
 buildTagFilter(cards);buildTypeFilter(cards);renderCardList(cards);document.getElementById('manualForm').classList.add('hidden');showScreen('deck',push)}
@@ -4997,7 +5079,28 @@ wir:document.getElementById('cWir').value.trim(),ihr:document.getElementById('cI
 ...newCardFields()});
 await saveCards(currentDeckId,cards);['manualDe','manualRu','manualPlural','manualTag','manualEx','manualNote','cIch','cDu','cEr','cWir','cIhr','cSie','cPart'].forEach(id=>document.getElementById(id).value='');
 document.getElementById('manualType').value='';openDeck(currentDeckId,false)};
-document.getElementById('deleteDeckBtn').onclick=async()=>{if(!(await showConfirm(t('confirm_q'),{destructive:true})))return;await saveDecks((await loadDecks()).filter(d=>d.id!==currentDeckId));try{localStorage.removeItem('cards:'+currentDeckId)}catch(e){}try{await idbDel('cards:'+currentDeckId)}catch(e){}navStack=['home'];showScreen('home',false);renderHome()};
+document.getElementById('deleteDeckBtn').onclick=async()=>{await deleteCurrentDeck()};
+async function deleteCurrentDeck(){
+const deck=await getCurrentDeck();
+if(isDeckProtected(deck)){showToast(t('deck_no_delete')||'Групповую колоду нельзя удалить','err');return}
+if(!(await showConfirm(t('confirm_delete_deck')||t('confirm_q')||'Удалить колоду?',{destructive:true})))return;
+await saveDecks((await loadDecks()).filter(d=>d.id!==currentDeckId));
+try{localStorage.removeItem('cards:'+currentDeckId)}catch(e){}
+try{await idbDel('cards:'+currentDeckId)}catch(e){}
+navStack=['home'];showScreen('home',false);renderHome();
+}
+document.getElementById('deckDeleteBtn')&&(document.getElementById('deckDeleteBtn').onclick=()=>deleteCurrentDeck());
+document.getElementById('deckAddBtn')&&(document.getElementById('deckAddBtn').onclick=()=>{
+  if(typeof prefilledDeckId!=='undefined')prefilledDeckId=currentDeckId;
+  // open paste/add flow for this deck
+  const addMore=document.getElementById('addMoreBtn');
+  if(addMore)addMore.click();
+  else{showScreen('paste');}
+});
+document.getElementById('deckExportBtn')&&(document.getElementById('deckExportBtn').onclick=()=>{
+  const ex=document.getElementById('exportDeckBtn');if(ex)ex.click();
+});
+
 
 /* STUDY */
 async function startStudy(deckId,mode){
@@ -5015,7 +5118,7 @@ studyIndex=0;studyResults={yes:0,no:0,hard:0};undoStack=null;sessionStart=Date.n
 if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{const sec=Math.floor((Date.now()-sessionStart)/1000);document.getElementById('studyTimer').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')},1000);
 showScreen('study');showStudyCard()}
 function updateModeVis(){['Flash','Type','Choice','Cloze','Sent','Conj'].forEach(m=>document.getElementById('mode'+m).classList.toggle('hidden',studyMode!==m.toLowerCase()))}
-function getFB(card){return studyDirection==='de-ru'?{front:card.de,back:card.ru,fl:'de-DE',bl:'ru-RU'}:{front:card.ru,back:card.de,fl:'ru-RU',bl:'de-DE'}}
+function getFB(card){const de=primarySide(card,'de')||card.de,ru=primarySide(card,'ru')||card.ru;return studyDirection==='de-ru'?{front:de,back:ru,fl:'de-DE',bl:'ru-RU'}:{front:ru,back:de,fl:'ru-RU',bl:'de-DE'}}
 async function showStudyCard(){const card=studyQueue[studyIndex];document.getElementById('studyCount').textContent=(studyIndex+1)+'/'+studyQueue.length;
 document.getElementById('studyProgress').style.width=(studyIndex/studyQueue.length*100)+'%';updateModeVis();const{front,back}=getFB(card);
 if(studyMode==='flash'){document.getElementById('flashcard').classList.remove('flipped');document.getElementById('cardFront').innerHTML=studyDirection==='de-ru'?colorizeDe(front):escapeHtml(front);
