@@ -1,5 +1,5 @@
 /* forn offline service worker */
-const CACHE = 'forn-v12.6';
+const CACHE = 'forn-v12.17';
 const CORE = [
   './',
   './forn-12.6.html',
