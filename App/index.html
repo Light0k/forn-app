@@ -305,7 +305,8 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .danger-link{display:none} /* hide old tiny link; use toolbar */
 
 .lore-card{border-radius:16px;padding:0;overflow:hidden;border:1px solid var(--border);background:var(--card);margin:.55rem 0;box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.lore-card .art{height:88px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;position:relative}
+.lore-card .art{height:120px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.lore-card .art svg{width:100%;height:100%;display:block}
 .lore-card .art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.12))}
 .lore-card .body{padding:.75rem .85rem 1rem}
 .lore-card .char{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.75;margin-bottom:.2rem}
@@ -318,7 +319,8 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .lore-card.r-legend .art{background:linear-gradient(135deg,#ffe6a8,#d4a017)}
 .coll-grid{grid-template-columns:1fr}
 .coll-chip.lore-mini{padding:0;overflow:hidden}
-.coll-chip .mini-art{height:48px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.coll-chip .mini-art{height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.coll-chip .mini-art svg{width:100%;height:100%}
 .story-dlg-badge{font-size:.65rem;opacity:.7;margin-left:.3rem}
 </style>
 
@@ -5693,7 +5695,74 @@ const RANKS=[
 {id:'polyglot',minXp:900,minIron:8,name:{ru:'Полиглот',en:'Polyglot',de:'Polyglott',uk:'Поліглот'}},
 {id:'meister',minXp:2000,minIron:20,name:{ru:'Meister',en:'Meister',de:'Meister',uk:'Meister'}}
 ];
-const BOOSTER_POOL=[
+
+/* ========== AUTO CONTENT FROM DECKS ========== */
+function hashStr(s){let h=2166136261>>>0;s=String(s||'');for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function cardArtSVG(seed,rarity,w,h){
+w=w||320;h=h||140;const rnd=mulberry32(hashStr(seed+(rarity||'')));
+const pal={common:['#2a2a2a','#6b6b6b','#cfcbc3','#f7f6f3'],rare:['#1a3a6b','#3d7aef','#a8c5ff','#e8f0ff'],epic:['#3a1a5c','#8b5cf6','#d8b4fe','#f3e8ff'],legend:['#5c3d0a','#d4a017','#ffe6a8','#fff8e7']}[rarity]||['#222','#888','#ddd','#fff'];
+const [c0,c1,c2,c3]=pal;const cx=w*(0.3+rnd()*0.4),cy=h*(0.35+rnd()*0.3);const gid='g'+(hashStr(seed)%99999);
+const headR=(14+rnd()*10).toFixed(1);const bodyW=(18+rnd()*16).toFixed(1);const eye1=rnd()>0.5;
+const x1=(rnd()*w).toFixed(1),y1=(rnd()*h).toFixed(1),x2=(rnd()*w).toFixed(1),y2=(rnd()*h).toFixed(1);
+return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="'+c1+'"/><stop offset="100%" stop-color="'+c0+'"/></linearGradient></defs><rect width="'+w+'" height="'+h+'" fill="url(#'+gid+')"/><circle cx="'+x1+'" cy="'+y1+'" r="'+(20+rnd()*40).toFixed(1)+'" fill="'+c2+'" opacity="0.25"/><circle cx="'+x2+'" cy="'+y2+'" r="'+(15+rnd()*30).toFixed(1)+'" fill="'+c3+'" opacity="0.2"/><ellipse cx="'+cx+'" cy="'+(cy+28)+'" rx="'+bodyW+'" ry="'+(22+rnd()*14).toFixed(1)+'" fill="'+c3+'" opacity="0.9"/><circle cx="'+cx+'" cy="'+cy+'" r="'+headR+'" fill="'+c3+'"/>'+(eye1?'<circle cx="'+(cx-4)+'" cy="'+cy+'" r="2.2" fill="'+c0+'"/><circle cx="'+(cx+4)+'" cy="'+cy+'" r="2.2" fill="'+c0+'"/>':'<path d="M'+(cx-6)+' '+(cy+2)+' Q'+cx+' '+(cy+8)+' '+(cx+6)+' '+(cy+2)+'" stroke="'+c0+'" fill="none" stroke-width="2"/>')+'</svg>';
+}
+async function loadAllUserCards(){const decks=filterDecksForUi(await loadDecks());const all=[];for(const d of decks){for(const c of await loadCards(d.id)){if(c&&c.de)all.push({...c,_deck:d.id,_deckName:d.name})}}return all}
+function parseNounArticle(de){const m=String(de||'').trim().match(/^(der|die|das)\s+(.+)$/i);return m?{art:m[1].toLowerCase(),noun:m[2].trim(),full:m[0]}:null}
+function isVerbCard(c){if((c.type||'').toUpperCase()==='V')return true;if(c.conj&&Object.values(c.conj).some(v=>String(v||'').trim()))return true;const de=String(c.de||'').trim();return !/^(der|die|das)\s+/i.test(de)&&/^[a-zäöü]/.test(de)&&de.split(/\s+/).length<=2}
+function isCollectibleCard(c){const tag=(c.tag||'').toLowerCase();const note=(c.note||'').toLowerCase();const type=(c.type||'').toUpperCase();if(['idiom','slang','rede','phrase','ph','coll','идиом','сленг'].some(k=>tag.includes(k)))return true;if(type==='PH'||type==='IDIOM')return true;if(/idiom|slang|идиом|сленг|redewendung/.test(note))return true;const de=String(c.de||'').trim();return de.split(/\s+/).length>=3&&de.length>12}
+function rarityFromCard(c){const n=String(c.de||'').split(/\s+/).length;if(n>=5)return 'legend';if(n>=3)return 'epic';if((c.tag||'').toLowerCase().includes('slang'))return 'rare';return hashStr(c.de)%3===0?'rare':'common'}
+async function getCollectiblePool(){
+const cards=await loadAllUserCards();const fromDecks=[];const seen=new Set();
+for(const c of cards){if(!isCollectibleCard(c))continue;const de=cleanLabel(c.de,120),ru=cleanLabel(c.ru,120);if(!de||!ru||seen.has(de))continue;seen.add(de);
+fromDecks.push({id:'deck:'+hashStr(de).toString(36),de,ru,en:c.en||'',rarity:rarityFromCard(c),tag:c.tag||'Idiom',char:c._deckName||'Deck',lore:{ru:c.note||('Из колоды «'+(c._deckName||'')+'»'),en:c.note||('From deck')},_artSeed:de})}
+const seed=(typeof BOOSTER_POOL_SEED!=='undefined'?BOOSTER_POOL_SEED:[]).map(c=>({...c,_artSeed:c.de}));
+if(fromDecks.length>=6)return fromDecks;
+const merged=fromDecks.slice();for(const s of seed){if(!seen.has(s.de)){merged.push(s);seen.add(s.de)}}
+return merged;
+}
+async function buildGrammarFromDecks(mode){
+const cards=await loadAllUserCards();const nouns=cards.map(c=>parseNounArticle(c.de)).filter(Boolean);
+const verbs=cards.filter(isVerbCard);const withEx=cards.filter(c=>c.example&&String(c.example).length>8);const out=[];
+const akk={der:'den',die:'die',das:'das'};const dat={der:'dem',die:'der',das:'dem'};
+if(mode==='cases'){
+  shuffle(nouns).slice(0,10).forEach(n=>{
+    out.push({prompt:{ru:'Akk: Ich sehe ___ '+n.noun+'.',en:'Akk: Ich sehe ___ '+n.noun+'.',de:'Akk: Ich sehe ___ '+n.noun+'.'},options:shuffle(['den','die','das','dem']).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4),answer:akk[n.art],hint:n.full+' → Akk '+akk[n.art]});
+    out.push({prompt:{ru:'Dat: Mit ___ '+n.noun,en:'Dat: Mit ___ '+n.noun,de:'Dat: Mit ___ '+n.noun},options:shuffle(['dem','der','den','das']).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4),answer:dat[n.art],hint:'mit + Dativ → '+dat[n.art]});
+  });
+}
+if(mode==='kasus'){
+  shuffle(nouns).slice(0,12).forEach(n=>{
+    const need=akk[n.art];const map={den:'en',die:'ie',das:'as'};const b=map[need]||'en';
+    out.push({sentence:'Ich sehe d___ '+n.noun+'.',blank:b,options:shuffle(['em','en','er','es','ie','as']).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4),rule:n.full+' → '+need});
+  });
+}
+if(mode==='perfekt'){
+  const seinR=['gehen','kommen','fahren','fliegen','laufen','bleiben','sein','werden','ankommen','aufstehen'];
+  shuffle(verbs).slice(0,10).forEach(v=>{
+    const inf=cleanLabel(v.de,40).toLowerCase();const aux=seinR.some(r=>inf.includes(r))?'ist':'hat';
+    const part=(v.conj&&v.conj.part)?v.conj.part:(inf.startsWith('ge')?inf:('ge'+inf.replace(/e?n$/,'').replace(/en$/,'')+'t'));
+    out.push({prompt:{ru:'Perfekt: Er / '+inf,en:'Perfekt: Er / '+inf,de:'Perfekt: Er / '+inf},tokens:['Er',aux,part],answer:['Er',aux,part]});
+  });
+}
+if(mode==='nebensatz'){
+  shuffle(nouns).slice(0,6).forEach(n=>{
+    const subj=n.art==='die'?'sie':(n.art==='das'?'es':'er');
+    out.push({prompt:{ru:'weil: … weil ('+n.noun+' / schön / sein)',en:'weil-clause',de:'weil …'},tokens:shuffle([subj,'schön','ist']),answer:[subj,'schön','ist']});
+  });
+  withEx.filter(c=>/weil|dass|wenn|obwohl/i.test(c.example)).slice(0,6).forEach(c=>{
+    const parts=String(c.example).split(/\s+/).filter(Boolean);if(parts.length>=3&&parts.length<=8)out.push({prompt:{ru:'Собери пример из карточки',en:'Rebuild example',de:'Beispiel ordnen'},tokens:shuffle(parts.slice()),answer:parts});
+  });
+}
+if(out.length)return shuffle(out).slice(0,12);
+if(mode==='cases')return (typeof GRAM_CASES_FALLBACK!=='undefined'?GRAM_CASES_FALLBACK:[]).slice(0,8);
+if(mode==='kasus')return (typeof GRAM_KASUS_FALLBACK!=='undefined'?GRAM_KASUS_FALLBACK:[]).slice(0,8);
+if(mode==='perfekt')return (typeof GRAM_PERFEKT_FALLBACK!=='undefined'?GRAM_PERFEKT_FALLBACK:[]).slice(0,6);
+return (typeof GRAM_NEBENSATZ_FALLBACK!=='undefined'?GRAM_NEBENSATZ_FALLBACK:[]).slice(0,6);
+}
+
+
+const BOOSTER_POOL_SEED=[
 // —— Idioms / characters of Berlin night school ——
 {id:'b1',de:'jemandem einen Bären aufbinden',ru:'втирать очки',en:'pull someone’s leg',rarity:'rare',tag:'Idiom',char:'Bär Bruno',emoji:'🐻',lore:{ru:'Бруно когда-то продал туристам «настоящий» Берлинский миф. С тех пор идиома — его визитка.',en:'Bruno once sold tourists a “real” Berlin myth. The idiom stuck to him.'}},
 {id:'b2',de:'die Kirche im Dorf lassen',ru:'не сгущать краски',en:'don’t overdo it',rarity:'common',tag:'Idiom',char:'Pfarrer Klaus',emoji:'⛪',lore:{ru:'Клаус всегда говорит: «Оставь церковь в деревне» — не раздувай проблему.',en:'Klaus always says: leave the church in the village — don’t blow it up.'}},
@@ -5805,11 +5874,11 @@ return L[uiLang]||L.ru||L.en||L.de||'';
 }
 function loreCardHTML(c,mini){
 const rare=c.rarity||'common';
-const art=c.emoji||'🃏';
+const art=cardArtSVG(c._artSeed||c.de||c.id,rare,mini?200:320,mini?72:120);
 const char=c.char||c.tag||'';
 const lore=loreText(c);
 if(mini){
-return '<div class="coll-chip lore-mini r-'+rare+'"><div class="mini-art" style="background:inherit">'+art+'</div><div style="padding:.5rem .6rem"><div class="de" style="font-weight:700">'+escapeHtml(c.de)+'</div><div style="opacity:.7;font-size:.75rem">'+escapeHtml(c.ru)+'</div><div class="rarity" style="font-size:.65rem;margin-top:.2rem">'+rarityLabel(rare)+' · '+escapeHtml(char)+'</div></div></div>';
+return '<div class="coll-chip lore-mini r-'+rare+'"><div class="mini-art">'+art+'</div><div style="padding:.5rem .6rem"><div class="de" style="font-weight:700">'+escapeHtml(c.de)+'</div><div style="opacity:.7;font-size:.75rem">'+escapeHtml(c.ru)+'</div><div class="rarity" style="font-size:.65rem;margin-top:.2rem">'+rarityLabel(rare)+' · '+escapeHtml(char)+'</div></div></div>';
 }
 return '<div class="lore-card r-'+rare+'"><div class="art">'+art+'</div><div class="body"><div class="char">'+escapeHtml(char)+' · '+rarityLabel(rare)+'</div><div class="de">'+escapeHtml(c.de)+'</div><div class="ru">'+escapeHtml(c.ru)+(c.en?' · '+escapeHtml(c.en):'')+'</div>'+(lore?'<div class="lore">'+escapeHtml(lore)+'</div>':'')+'</div></div>';
 }
@@ -5817,9 +5886,9 @@ function rarityLabel(r){
 const map={common:'rarity_common',rare:'rarity_rare',epic:'rarity_epic',legend:'rarity_legend'};
 return t(map[r]||'rarity_common')||r;
 }
-function pickPackCards(ownedIds,n){
-const pool=BOOSTER_POOL.filter(c=>!ownedIds.includes(c.id));
-const src=pool.length?pool:BOOSTER_POOL.slice();
+function pickPackCards(pool,ownedIds,n){
+const avail=(pool||[]).filter(c=>!ownedIds.includes(c.id));
+const src=avail.length?avail:(pool||[]).slice();
 const weights={common:50,rare:30,epic:15,legend:5};
 const out=[];const used=new Set();
 while(out.length<n&&src.length){
@@ -5837,7 +5906,7 @@ if(!col.pendingPack)return;
 const day=todayStr();
 col.lastGoalDay=day;
 col.packsGrantedDay=day;
-const cards=pickPackCards(col.owned||[],3);
+const pool=await getCollectiblePool();const cards=pickPackCards(pool,col.owned||[],3);
 const reveal=document.getElementById('packReveal');
 if(reveal){
 reveal.classList.remove('hidden');
@@ -5857,7 +5926,7 @@ const col=await loadCollection();
 const grid=document.getElementById('collGrid');
 const empty=document.getElementById('collEmpty');
 const owned=new Set(col.owned||[]);
-const list=BOOSTER_POOL.filter(c=>owned.has(c.id));
+const pool=await getCollectiblePool();const list=pool.filter(c=>owned.has(c.id));
 if(empty){empty.style.display=list.length?'none':'block';empty.textContent=t('coll_empty')||''}
 if(grid){
 grid.innerHTML=list.map(c=>loreCardHTML(c,false)).join('');
@@ -5868,7 +5937,7 @@ const op=document.getElementById('openPackBtn');if(op)op.onclick=()=>openBooster
 
 /* ---------- GRAMMAR TRAINER: cases / Perfekt / Nebensatz ---------- */
 
-const GRAM_KASUS=[
+const GRAM_KASUS_FALLBACK=[
 {sentence:'Ich helfe d___ Mann.',blank:'em',options:['em','en','er','es'],rule:'helfen + Dativ → dem'},
 {sentence:'Ich sehe d___ Frau.',blank:'ie',options:['ie','er','en','as'],rule:'sehen + Akk → die'},
 {sentence:'Das ist d___ Kind.',blank:'as',options:['as','er','em','en'],rule:'Nominativ Neutrum → das'},
@@ -5889,7 +5958,7 @@ const GRAM_KASUS=[
 {sentence:'Während d___ Unterrichts schweigen alle.',blank:'es',options:['es','em','en','er'],rule:'während + Genitiv → des'}
 ];
 
-const GRAM_CASES=[
+const GRAM_CASES_FALLBACK=[
 {prompt:{ru:'Выбери правильный артикль (Akkusativ): Ich sehe ___ Mann.',en:'Choose the article (Akk): Ich sehe ___ Mann.',de:'Artikel (Akk): Ich sehe ___ Mann.',uk:'Артикль (Akk): Ich sehe ___ Mann.'},options:['der','die','das','den'],answer:'den',hint:'Akk maskulin → den'},
 {prompt:{ru:'Dativ: Ich helfe ___ Frau.',en:'Dative: Ich helfe ___ Frau.',de:'Dativ: Ich helfe ___ Frau.',uk:'Датив: Ich helfe ___ Frau.'},options:['die','der','den','das'],answer:'der',hint:'Dat feminin → der'},
 {prompt:{ru:'Nominativ: ___ Kind spielt.',en:'Nominative: ___ Kind spielt.',de:'Nominativ: ___ Kind spielt.',uk:'Номінатив: ___ Kind spielt.'},options:['der','die','das','dem'],answer:'das',hint:'Nom neutrum → das'},
@@ -5903,7 +5972,7 @@ const GRAM_CASES=[
 {prompt:{ru:'Akkusativ: Für ___ Mann ist das schwer.',en:'Accusative: Für ___ Mann ist das schwer.',de:'Akkusativ: Für ___ Mann …',uk:'Акузатив: Für ___ Mann …'},options:['der','den','dem','das'],answer:'den',hint:'für + Akk'},
 {prompt:{ru:'Dativ: Nach ___ Arbeit gehe ich nach Hause.',en:'Dative: Nach ___ Arbeit …',de:'Dativ: Nach ___ Arbeit …',uk:'Датив: Nach ___ Arbeit …'},options:['die','der','den','dem'],answer:'der',hint:'nach + Dativ; fem → der'}
 ];
-const GRAM_PERFEKT=[
+const GRAM_PERFEKT_FALLBACK=[
 {prompt:{ru:'Собери Perfekt: Ich / das Buch / lesen',en:'Build Perfekt: Ich / das Buch / lesen',de:'Perfekt bauen: Ich / das Buch / lesen',uk:'Збери Perfekt: Ich / das Buch / lesen'},tokens:['Ich','habe','das','Buch','gelesen'],answer:['Ich','habe','das','Buch','gelesen']},
 {prompt:{ru:'Perfekt: Er / nach Berlin / fahren',en:'Perfekt: Er / nach Berlin / fahren',de:'Perfekt: Er / nach Berlin / fahren',uk:'Perfekt: Er / nach Berlin / fahren'},tokens:['Er','ist','nach','Berlin','gefahren'],answer:['Er','ist','nach','Berlin','gefahren']},
 {prompt:{ru:'Perfekt: Wir / gestern / kommen',en:'Perfekt: Wir / gestern / kommen',de:'Perfekt: Wir / gestern / kommen',uk:'Perfekt: Wir / gestern / kommen'},tokens:['Wir','sind','gestern','gekommen'],answer:['Wir','sind','gestern','gekommen']},
@@ -5913,7 +5982,7 @@ const GRAM_PERFEKT=[
 {prompt:{ru:'Perfekt: Ihr / das Fenster / öffnen',en:'Perfekt: Ihr / das Fenster / öffnen',de:'Perfekt: Ihr / das Fenster / öffnen',uk:'Perfekt: Ihr / das Fenster / öffnen'},tokens:['Ihr','habt','das','Fenster','geöffnet'],answer:['Ihr','habt','das','Fenster','geöffnet']},
 {prompt:{ru:'Perfekt: Er / eingeschlafen (einschlafen)',en:'Perfekt: Er / einschlafen',de:'Perfekt: Er / einschlafen',uk:'Perfekt: Er / einschlafen'},tokens:['Er','ist','eingeschlafen'],answer:['Er','ist','eingeschlafen']}
 ];
-const GRAM_NEBENSATZ=[
+const GRAM_NEBENSATZ_FALLBACK=[
 {prompt:{ru:'Nebensatz (weil): Ich bleibe zu Hause, weil … (müde / sein / ich)',en:'Subordinate (weil): … weil (müde / sein / ich)',de:'Nebensatz (weil): … weil (müde / sein / ich)',uk:'Підрядне (weil): … weil (müde / sein / ich)'},tokens:['ich','müde','bin'],answer:['ich','müde','bin']},
 {prompt:{ru:'dass: Er sagt, dass … (morgen / kommen / er)',en:'dass: Er sagt, dass … (morgen / kommen / er)',de:'dass: … (morgen / kommen / er)',uk:'dass: … (morgen / kommen / er)'},tokens:['er','morgen','kommt'],answer:['er','morgen','kommt']},
 {prompt:{ru:'wenn: Wenn … (Zeit / haben / ich), rufe ich an.',en:'wenn: Wenn … (Zeit / haben / ich)',de:'wenn: … (Zeit / haben / ich)',uk:'wenn: … (Zeit / haben / ich)'},tokens:['ich','Zeit','habe'],answer:['ich','Zeit','habe']},
@@ -5931,14 +6000,12 @@ const p=item.prompt;return (p&& (p[uiLang]||p.en||p.ru||p.de))||'';
 }
 function shuffleLocal(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 
-function startGrammar(mode){
+async function startGrammar(mode){
 gramMode=mode||'cases';
 document.querySelectorAll('[data-gmode]').forEach(b=>b.classList.toggle('btn-primary',b.dataset.gmode===gramMode));
 document.querySelectorAll('[data-gmode]').forEach(b=>b.classList.toggle('btn-outline',b.dataset.gmode!==gramMode));
-if(gramMode==='cases')gramQueue=shuffleLocal(GRAM_CASES).slice(0,10);
-else if(gramMode==='kasus')gramQueue=shuffleLocal(GRAM_KASUS).slice(0,12);
-else if(gramMode==='perfekt')gramQueue=shuffleLocal(GRAM_PERFEKT).slice(0,8);
-else gramQueue=shuffleLocal(GRAM_NEBENSATZ).slice(0,8);
+gramQueue=await buildGrammarFromDecks(gramMode);
+if(!gramQueue.length){showToast(t('dlg_story_need')||'Add words to decks first','err');return}
 gramIndex=0;gramAnswered=false;showGramItem();showScreen('grammar');
 }
 function showGramItem(){
@@ -6056,7 +6123,7 @@ async function renderStats(){const st=await loadStats();const decks=await loadDe
 const days=Object.keys(st.days||{}).sort().reverse().slice(0,8);
 const r=rankFor(st);
 const col=await loadCollection();
-document.getElementById('statsContent').innerHTML='<div style="text-align:center;margin-bottom:.6rem"><div class="streak-num">'+(st.streak||0)+'</div><div class="rank-badge" style="justify-content:center;margin:.4rem auto 0"><span class="rk">'+escapeHtml(rankName(r))+' · '+(st.xp||0)+' XP</span></div></div><div class="settings-row"><span>'+t('stats_cards')+'</span><strong>'+total+'</strong></div><div class="settings-row"><span>'+t('stats_mastered')+'</span><strong>'+mastered+'</strong></div><div class="settings-row"><span>'+t('stats_reviews')+'</span><strong>'+(st.totalReviews||0)+'</strong></div><div class="settings-row"><span>'+(t('iron_wins')||'Iron')+'</span><strong>'+(st.ironWins||0)+'</strong></div><div class="settings-row"><span>'+(t('coll_title')||'Collection')+'</span><strong>'+(col.owned||[]).length+'/'+BOOSTER_POOL.length+'</strong></div><h3 style="font-size:.82rem;margin:.6rem 0 .25rem">'+t('stats_days')+'</h3>'+(days.map(d=>'<div style="display:flex;justify-content:space-between;font-size:.8rem"><span>'+d+'</span><span>'+st.days[d]+'</span></div>').join('')||'—')
+document.getElementById('statsContent').innerHTML='<div style="text-align:center;margin-bottom:.6rem"><div class="streak-num">'+(st.streak||0)+'</div><div class="rank-badge" style="justify-content:center;margin:.4rem auto 0"><span class="rk">'+escapeHtml(rankName(r))+' · '+(st.xp||0)+' XP</span></div></div><div class="settings-row"><span>'+t('stats_cards')+'</span><strong>'+total+'</strong></div><div class="settings-row"><span>'+t('stats_mastered')+'</span><strong>'+mastered+'</strong></div><div class="settings-row"><span>'+t('stats_reviews')+'</span><strong>'+(st.totalReviews||0)+'</strong></div><div class="settings-row"><span>'+(t('iron_wins')||'Iron')+'</span><strong>'+(st.ironWins||0)+'</strong></div><div class="settings-row"><span>'+(t('coll_title')||'Collection')+'</span><strong>'+(col.owned||[]).length+'/'+(await getCollectiblePool()).length+'</strong></div><h3 style="font-size:.82rem;margin:.6rem 0 .25rem">'+t('stats_days')+'</h3>'+(days.map(d=>'<div style="display:flex;justify-content:space-between;font-size:.8rem"><span>'+d+'</span><span>'+st.days[d]+'</span></div>').join('')||'—')
 }
 
 
