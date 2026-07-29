@@ -283,8 +283,8 @@ select:focus,.deck-name-input:focus,input[type=text]:focus,input[type=search]:fo
 .hint-btn:active{transform:scale(.95)}
 .hint-row{display:flex;gap:.4rem;align-items:center;width:100%}
 .hint-row .type-input,.hint-row input{flex:1}
-.hint-bubble{font-size:.78rem;color:var(--ink-soft);background:var(--paper-dark);border-radius:10px;padding:.45rem .6rem;margin:.35rem 0;line-height:1.35;display:none}
-.hint-bubble.show{display:block}
+.hint-bubble{font-size:.8rem;color:var(--ink);background:var(--paper-dark);border:1px solid var(--border);border-radius:10px;padding:.5rem .65rem;margin:.35rem 0;line-height:1.4;display:none}
+.hint-bubble.show{display:block!important}
 .morph-blank{display:inline-block;min-width:2.2em;border-bottom:2px solid var(--ink);text-align:center;font-weight:700;margin:0 .1rem}
 .morph-filled{color:var(--sage);border-bottom-color:var(--sage)}
 
@@ -4069,10 +4069,8 @@ alert_no_mistakes:'Chưa có thẻ yếu',
 };
 
 function t(key){
-const pack=UI[uiLang]||UI.en||UI.ru;
-if(pack[key]!=null)return pack[key];
-if(UI.en[key]!=null)return UI.en[key];
-if(UI.ru[key]!=null)return UI.ru[key];
+const packs=[UI[uiLang],UI.en,UI.ru].filter(Boolean);
+for(const p of packs){if(p&&p[key]!=null&&p[key]!=='')return p[key]}
 return key;
 }
 function tIntro(){return t('intro')}
@@ -5001,24 +4999,38 @@ const first=s[0];
 return first+s.slice(1).replace(/[^\s\-']/g,'_');
 }
 function showStudyHint(mode){
-const bubble=document.getElementById(mode+'HintBubble');if(!bubble)return;
+const bubble=document.getElementById(mode+'HintBubble');
 const {word,rule}=expectedAnswerForHints();
-studyHintLevel=Math.min(2,studyHintLevel+1);
+studyHintLevel=Math.min(2,(studyHintLevel||0)+1);
+let text='';
 if(studyHintLevel===1){
-  bubble.textContent=(t('hint_letter')||'Letter')+': '+maskWord(word);
+  text=(t('hint_letter')||'Letter')+': '+(word?maskWord(word):'?');
 }else{
-  const parts=[(t('hint_rule')||'Rule')+': '+(rule||'—')];
-  if(word)parts.push(maskWord(word));
-  bubble.textContent=parts.join(' · ');
+  text=(t('hint_rule')||'Rule')+': '+(rule||'—');
+  if(word)text+=' · '+maskWord(word);
 }
-bubble.classList.add('show');
+if(bubble){bubble.textContent=text;bubble.classList.add('show');bubble.style.display='block'}
+else{showToast(text,'ok')}
 }
 function bindHintButtons(){
+// direct bind
 const map=[['typeHintBtn','type'],['clozeHintBtn','cloze'],['conjHintBtn','conj'],['sentHintBtn','sent']];
 map.forEach(([id,mode])=>{
   const el=document.getElementById(id);if(!el)return;
   el.onclick=(e)=>{e.preventDefault();e.stopPropagation();showStudyHint(mode)};
 });
+}
+// permanent delegation (survives any re-renders)
+if(!window._hintDelegated){
+window._hintDelegated=true;
+document.addEventListener('click',(e)=>{
+  const btn=e.target&&e.target.closest&&e.target.closest('.hint-btn');
+  if(!btn)return;
+  e.preventDefault();e.stopPropagation();
+  const id=btn.id||'';
+  const mode=id.replace('HintBtn','').toLowerCase();
+  if(['type','cloze','conj','sent'].includes(mode))showStudyHint(mode);
+},true);
 }
 function qualityWithHint(ok){
 // hints reduce max quality: full hint → hard(3) on success; no perfect easy
@@ -5919,6 +5931,8 @@ applyTheme().then(renderHome);
 let deferredInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById('installBtn');if(b)b.classList.remove('hidden')});
 const _instBtn=document.getElementById('installBtn');if(_instBtn)_instBtn.onclick=async()=>{if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;_instBtn.classList.add('hidden')};
+try{bindHintButtons()}catch(e){}
+try{bindGrammarModes()}catch(e){}
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     const swUrl=new URL('sw.js',location.href).pathname;
