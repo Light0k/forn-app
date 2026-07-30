@@ -2,7 +2,7 @@
   "name": "forn",
   "short_name": "forn",
   "description": "German vocabulary trainer",
-  "start_url": "./forn-12.6.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f7f6f3",
   "theme_color": "#f7f6f3",
