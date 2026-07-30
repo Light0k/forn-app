@@ -6985,8 +6985,10 @@ if(!deck)return;
 const auto=detectDeckLang(deck);
 if(auto&&auto!=='all'){deck={...deck,lang:auto};const idx=decks.findIndex(d=>d.id===deck.id);if(idx>=0){decks[idx]=deck;await saveDecks(decks)}}
 const payload={app:'forn',version:12,decks:[{...deck,lang:deck.lang||auto||'',protected:true,source:'group'}],cardsByDeck:{[currentDeckId]:cards}};
-const langCode=(deck.lang||auto||'all');
-const fname=(langCode&&langCode!=='all')?('deck-'+langCode+'.json'):((deck.name||'deck').replace(/[^\w\-\[\]]+/g,'_')+'.json');
+const langCode=(deck.lang||auto||'');
+// File name from deck title, e.g. Kleidung [RU] → Kleidung_RU.json (never only deck-ru)
+const base=(deck.name||'deck').replace(/[\[\](){}]/g,'').trim().replace(/[^\w\-]+/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'')||'deck';
+const fname=base+'.json';
 downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),fname);
 showToast((t('alert_saved')||'OK')+' · '+fname,'ok');
 };
