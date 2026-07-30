@@ -6762,9 +6762,8 @@ return 'all';
 function deckMatchesUi(d,lang){
 if(showAllDecks)return true;
 if(!d)return false;
-// Course / official packs always visible regardless of UI language
-if(d.source==='course'||d.source==='pack'||d.source==='group'||d.source==='official')return true;
-if(String(d.id||'').startsWith('course-')||String(d.id||'')==='b2-core')return true;
+// Language-tagged decks (Kleidung [RU], Kleidung_EN.json, …) only for matching UI lang.
+// Untagged / "all" decks (group-base core, course packs without lang) stay visible to everyone.
 const dl=detectDeckLang(d);
 if(dl==='all')return true;
 if(dl===lang)return true;
