@@ -1,5 +1,5 @@
 /* forn offline service worker — caches static files only; NEVER touches IndexedDB / user progress */
-const CACHE = 'forn-v12.23';
+const CACHE = 'forn-v12.25';
 const CORE = [
   './',
   './index.html',

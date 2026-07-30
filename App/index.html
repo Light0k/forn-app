@@ -6369,16 +6369,20 @@ showToast(t('alert_saved')+' · CSV','ok');
 };
 
 /* ---------- ONE-CLICK GROUP SYNC ---------- */
+/** Public deck pack: curator only uploads *deck*.json to GitHub App/ folder */
+const GROUP_GITHUB={owner:'Light0k',repo:'forn-app',path:'App',branch:'main'};
+
 async function mergeGroupPayload(b){
-if(!b||!b.decks||!Array.isArray(b.decks))throw new Error('format');
+if(!b||!Array.isArray(b.decks)||!b.decks.length)return {addedCards:0,addedDecks:0};
 let decks=await loadDecks();
 let addedCards=0,addedDecks=0;
 for(const d of b.decks){
+  if(d&&d.file&&!d.name)continue; // index-only stub
   let deck=decks.find(x=>x.id===d.id||x.name===d.name);
   if(!deck){
     deck={id:d.id||uid(),name:sanitizeField(d.name||'Group',80),createdAt:d.createdAt||Date.now(),lang:d.lang||detectDeckLang(d),protected:true,source:'group'};
     decks.push(deck);addedDecks++;
-  }else{deck.protected=true;deck.source='group';if(d.lang)deck.lang=d.lang;}
+  }else{deck.protected=true;deck.source='group';if(d.lang)deck.lang=d.lang;else{const auto=detectDeckLang(deck);if(auto&&auto!=='all')deck.lang=auto}}
   const incoming=(b.cardsByDeck&&(b.cardsByDeck[d.id]||b.cardsByDeck[deck.id]))||[];
   const existing=await loadCards(deck.id);
   const seen=new Set(existing.map(c=>(c.de||'')+'|'+(c.ru||'')));
@@ -6400,29 +6404,114 @@ for(const d of b.decks){
 await saveDecks(decks);
 return {addedCards,addedDecks};
 }
+
+async function fetchGroupJson(url){
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok)return null;
+    return await res.json();
+  }catch(e){return null}
+}
+
+function isDeckPack(data){
+  return !!(data&&data.app==='forn'&&Array.isArray(data.decks)&&data.decks.length&&data.cardsByDeck);
+}
+
+/** List JSON files in GitHub App/ folder (public repo, no token). */
+async function listGithubAppJson(){
+  const {owner,repo,path,branch}=GROUP_GITHUB;
+  const api='https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path+'?ref='+branch;
+  try{
+    const res=await fetch(api,{cache:'no-store',headers:{'Accept':'application/vnd.github+json'}});
+    if(!res.ok)return [];
+    const list=await res.json();
+    if(!Array.isArray(list))return [];
+    const skip=new Set(['group-base.json','manifest.json','package.json']);
+    return list.filter(f=>{
+      if(!f||f.type!=='file')return false;
+      const n=(f.name||'').toLowerCase();
+      if(!n.endsWith('.json'))return false;
+      if(skip.has(n))return false;
+      if(n==='index.json')return false;
+      return true;
+    }).map(f=>({
+      name:f.name,
+      // prefer raw.githubusercontent for CORS-friendly GET
+      url:'https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+branch+'/'+path+'/'+encodeURIComponent(f.name)
+    }));
+  }catch(e){console.warn('github list',e);return []}
+}
+
+/**
+ * Curator workflow: export deck → upload One JSON to GitHub App/ → everyone taps 🔄 Group.
+ * No manual group-base merge. Each language/theme = separate file (Kleidung_RU.json, …).
+ */
+async function syncGroupFromHost(){
+  const total={addedCards:0,addedDecks:0,loaded:0,files:[]};
+  const tryMerge=async(data,label)=>{
+    if(!isDeckPack(data))return;
+    total.loaded++;
+    total.files.push(label||'?');
+    try{
+      const r=await mergeGroupPayload(data);
+      total.addedCards+=r.addedCards;total.addedDecks+=r.addedDecks;
+    }catch(e){console.warn('merge',label,e)}
+  };
+
+  // 1) Auto-discover all deck JSON on GitHub
+  const remote=await listGithubAppJson();
+  for(const f of remote){
+    const data=await fetchGroupJson(f.url);
+    await tryMerge(data,f.name);
+  }
+
+  // 2) Fallback: same-origin files (Netlify mirror) + optional group-base index
+  const localCandidates=['./group-base.json'];
+  for(const url of localCandidates){
+    const data=await fetchGroupJson(url);
+    if(!data)continue;
+    if(isDeckPack(data))await tryMerge(data,url);
+    // optional files:[] still supported
+    if(Array.isArray(data.files)){
+      for(const name of data.files){
+        const u=String(name).startsWith('http')?name:('./'+String(name).replace(/^\.\//,''));
+        const d2=await fetchGroupJson(u);
+        await tryMerge(d2,name);
+      }
+    }
+  }
+
+  // 3) Same-origin: try files we discovered by name from GitHub (if API failed but Netlify has copies)
+  if(!remote.length){
+    // last resort: group-base only already tried
+  }else if(total.loaded===0){
+    for(const f of remote){
+      const local=await fetchGroupJson('./'+f.name);
+      await tryMerge(local,f.name);
+    }
+  }
+
+  return total;
+}
+
 document.getElementById('syncGroupBtn')&&(document.getElementById('syncGroupBtn').onclick=async()=>{
 const btn=document.getElementById('syncGroupBtn');
 const old=btn.textContent;btn.disabled=true;btn.textContent='…';
 try{
   if(!navigator.onLine)throw new Error(t('sync_fail')||'offline');
-  const candidates=['./group-base.json','./deck-'+uiLang+'.json','./deck-ru.json','./deck-en.json'];
-  let data=null, lastErr=null, total={addedCards:0,addedDecks:0};
-  for(const url of candidates){
-    try{
-      const res=await fetch(url,{cache:'no-store'});
-      if(!res.ok)continue;
-      data=await res.json();
-      const r=await mergeGroupPayload(data);
-      total.addedCards+=r.addedCards;total.addedDecks+=r.addedDecks;
-    }catch(e){lastErr=e}
+  const total=await syncGroupFromHost();
+  if(total.addedCards||total.addedDecks){
+    showToast((t('sync_ok')||'OK')+': +'+total.addedCards+(total.addedDecks?(' · +'+total.addedDecks+' 📚'):''),'ok');
+  }else if(total.loaded){
+    showToast(t('sync_none')||'No new cards','ok');
+  }else{
+    throw new Error(t('sync_fail')||'Error');
   }
-  if(total.addedCards||total.addedDecks)showToast((t('sync_ok')||'OK')+': +'+total.addedCards,'ok');
-  else if(data)showToast(t('sync_none')||'No new cards','ok');
-  else throw lastErr||new Error(t('sync_fail')||'Error');
   renderHome();
 }catch(e){showToast(e.message||t('sync_fail')||'Error','err')}
 finally{btn.disabled=false;btn.textContent=old}
 });
+
 
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFileInput').click();
 document.getElementById('importFileInput').onchange=async e=>{
