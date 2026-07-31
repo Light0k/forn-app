@@ -6927,7 +6927,49 @@ showToast(t('alert_saved')+' · CSV','ok');
 /** Public deck pack: curator only uploads *deck*.json to GitHub App/ folder */
 const GROUP_GITHUB={owner:'Light0k',repo:'forn-app',path:'App',branch:'main'};
 
-async function mergeGroupPayload(b){
+
+function cardTrAny(c){
+  if(!c)return '';
+  const L=(typeof uiLang!=='undefined'?uiLang:'ru');
+  if(c[L]&&String(c[L]).trim())return String(c[L]).trim();
+  if(c.ru&&String(c.ru).trim())return String(c.ru).trim();
+  if(typeof TR_LANGS!=='undefined'){
+    for(const k of TR_LANGS){if(c[k]&&String(c[k]).trim())return String(c[k]).trim()}
+  }
+  return '';
+}
+function cardHasAnyTr(c){
+  if(!c)return false;
+  if(typeof TR_LANGS!=='undefined'){
+    for(const k of TR_LANGS){if(c[k]&&String(c[k]).trim())return true}
+  }
+  return !!(c.ru&&String(c.ru).trim());
+}
+/** Accept forn-deck-v1, group-base, or full backup → {decks, cardsByDeck} */
+function normalizeImportPayload(b){
+  if(!b||typeof b!=='object')return null;
+  // Single deck export from ⬇ button
+  if((b.format==='forn-deck-v1'||b.deck)&& (b.cards||b.deck)){
+    const deck=b.deck||(Array.isArray(b.decks)?b.decks[0]:null);
+    if(!deck)return null;
+    const id=deck.id||('imp-'+Date.now());
+    deck.id=id;
+    return {app:'forn',decks:[deck],cardsByDeck:{[id]:Array.isArray(b.cards)?b.cards:[]}};
+  }
+  if(Array.isArray(b.decks)&&b.decks.length){
+    // Ensure cardsByDeck keys exist; some files put cards on deck.cards
+    const cardsByDeck=Object.assign({},b.cardsByDeck||{});
+    for(const d of b.decks){
+      if(!d||!d.id)continue;
+      if(!cardsByDeck[d.id]&&Array.isArray(d.cards))cardsByDeck[d.id]=d.cards;
+    }
+    return {app:b.app||'forn',decks:b.decks,cardsByDeck,settings:b.settings,writeHistory:b.writeHistory,stats:b.stats};
+  }
+  return null;
+}
+
+async function mergeGroupPayload(raw){
+const b=normalizeImportPayload(raw)||raw;
 if(!b||!Array.isArray(b.decks)||!b.decks.length)return {addedCards:0,addedDecks:0};
 let decks=await loadDecks();
 let addedCards=0,addedDecks=0;
@@ -6946,8 +6988,7 @@ for(const d of b.decks){
   for(const c of incoming){
     const de=sanitizeField(c.de||'',200);
     if(!de)continue;
-    const trAny=cardTr(c)||sanitizeField(c.ru||'',200);
-    if(!trAny)continue;
+    if(!cardHasAnyTr(c)&&!(c.ru&&String(c.ru).trim()))continue;
     const key=cleanLabel(de);
     const prev=byDe.get(key);
     if(prev){
@@ -6959,10 +7000,13 @@ for(const d of b.decks){
         plural:sanitizeField(c.plural||'',80),tag:sanitizeField(c.tag||'',40),
         example:sanitizeField(c.example||'',300),note:sanitizeField(c.note||'',300),
         type:sanitizeField(c.type||'',12),conj:c.conj||emptyConj(),
+        tags:(c.tags&&typeof c.tags==='object')?{...c.tags}:{},
+        notes:(c.notes&&typeof c.notes==='object')?{...c.notes}:{},
         box:1,ease:2.5,interval:0,reps:0,lapses:0,due:null};
       for(const k of TR_LANGS){if(c[k])row[k]=sanitizeField(c[k],200)}
       if(!row.ru&&c.ru)row.ru=sanitizeField(c.ru,200);
-      if(!cardTr(row))continue;
+      migrateCardLangMeta(row);
+      if(!cardHasAnyTr(row))continue;
       merged.push(row);byDe.set(key,row);addedCards++;
     }
   }
@@ -7094,7 +7138,8 @@ try{
     showToast(t('alert_saved')+' ✓','ok');
     renderHome();
   }else{
-    const b=JSON.parse(text);
+    let b=JSON.parse(text);
+    b=normalizeImportPayload(b)||b;
     if(!b.decks||!Array.isArray(b.decks))throw new Error('format');
     let chosen=b.decks.slice();
     if(b.decks.length>1){
@@ -7137,7 +7182,7 @@ try{
             box:c.box||1,ease:c.ease||2.5,interval:c.interval||0,reps:c.reps||0,lapses:c.lapses||0,due:c.due||null};
           for(const k of TR_LANGS){if(c[k])row[k]=sanitizeField(c[k],200)}
           if(!row.ru&&c.ru)row.ru=sanitizeField(c.ru,200);
-          if(!cardTr(row))continue;
+          if(!cardHasAnyTr(row))continue;
           merged.push(row);byDe.set(de,row);addedCards++;
         }
       }
@@ -7171,13 +7216,15 @@ if(max&&s.length>max)s=s.slice(0,max).trim();
 return s;
 }
 function isPlayableCard(c){
-const de=cleanLabel(c&&c.de,60), tr=cleanLabel(cardTr(c),60);
+const de=cleanLabel(c&&c.de,60), tr=cleanLabel(cardTrAny(c),60);
 if(!de||!tr)return false;
 if(de.length<2||tr.length<2)return false;
 return true;
 }
 function primarySide(c,side){
-if(side==='ru'||side==='tr')return cleanLabel(cardTr(c),80);
+if(side==='de')return cleanLabel(c&&c.de,80);
+// translation face: prefer UI language, else any available (group decks are multilingual)
+if(side==='ru'||side==='tr'||side==='translation')return cleanLabel(cardTrAny(c),80);
 return cleanLabel(c&&c[side],80);
 }
 const TR_LANGS=['ru','en','uk','es','fr','pl','tr','zh','ja','ar','pt','it','ko','vi'];
@@ -7287,10 +7334,28 @@ function mergeTrInto(dst,src){
     if(!cur){dst[k]=v;n++;}
   }
   if(src.plural&&!dst.plural)dst.plural=src.plural;
-  if(src.tag&&!dst.tag)dst.tag=src.tag;
   if(src.example&&!dst.example)dst.example=src.example;
-  if(src.note&&!dst.note)dst.note=src.note;
   if(src.type&&!dst.type)dst.type=src.type;
+  // per-language tags/notes
+  if(src.tags&&typeof src.tags==='object'){
+    if(!dst.tags||typeof dst.tags!=='object')dst.tags={};
+    for(const [L,v] of Object.entries(src.tags)){
+      if(v&&String(v).trim()&&!dst.tags[L]){dst.tags[L]=String(v).trim();n++;}
+    }
+  }else if(src.tag&&String(src.tag).trim()){
+    // legacy tag → only if we have no tags yet for any lang
+    if(!dst.tags||!Object.keys(dst.tags).length){
+      if(!dst.tag)dst.tag=String(src.tag).trim();
+    }
+  }
+  if(src.notes&&typeof src.notes==='object'){
+    if(!dst.notes||typeof dst.notes!=='object')dst.notes={};
+    for(const [L,v] of Object.entries(src.notes)){
+      if(v&&String(v).trim()&&!dst.notes[L]){dst.notes[L]=String(v).trim();n++;}
+    }
+  }else if(src.note&&String(src.note).trim()&&!dst.note){
+    dst.note=String(src.note).trim();
+  }
   return n;
 }
 
@@ -10302,9 +10367,19 @@ document.getElementById('resetProgressBtn')&&(document.getElementById('resetProg
 
 /* Single-deck export, hard-words, QR share */
 function deckExportPayload(deck,cards){
+  const langFields=['ru','en','uk','es','fr','pl','tr','zh','ja','ar','pt','it','ko','vi'];
   return {format:'forn-deck-v1',exportedAt:Date.now(),
     deck:{id:deck.id,name:deck.name,lang:deck.lang||'all',protected:!!deck.protected},
-    cards:(cards||[]).map(c=>({de:c.de,ru:c.ru,en:c.en,uk:c.uk,pl:c.pl,zh:c.zh,plural:c.plural||'',tag:c.tag||'',example:c.example||'',note:c.note||'',type:c.type||'',conj:c.conj||null}))};
+    cards:(cards||[]).map(c=>{
+      const row={de:c.de||'',plural:c.plural||'',example:c.example||'',type:c.type||'',conj:c.conj||null};
+      for(const L of langFields){if(c[L]&&String(c[L]).trim())row[L]=String(c[L]).trim()}
+      // per-language tags/notes (and legacy single fields)
+      if(c.tags&&typeof c.tags==='object')row.tags={...c.tags};
+      if(c.notes&&typeof c.notes==='object')row.notes={...c.notes};
+      if(c.tag)row.tag=c.tag;
+      if(c.note)row.note=c.note;
+      return row;
+    })};
 }
 async function exportCurrentDeck(){
   try{
